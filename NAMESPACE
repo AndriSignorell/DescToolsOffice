@@ -1,0 +1,56 @@
+
+export(
+
+"GetCurrPP","GetCurrWrd","GetCurrXL","GetNewPP","GetNewWrd","GetNewXL",
+"ToWrd",
+"WrdCaption","WrdGoto","WrdPageBreak",
+"WrdInsertBookmark","WrdTable","WrdKill","WrdPlot","WrdSaveAs",
+"WrdUpdateBookmark","WrdDeleteBookmark",
+"XLGetRange","XLGetWorkbook","XLKill","XLView","ToXL","XLDateToPOSIXct",
+"WrdParagraphFormat", "WrdParagraphFormat<-", "WrdFont", "WrdFont<-","WrdStyle", 
+"WrdStyle<-", "WrdTableBorders",
+"WrdCellRange", "WrdMergeCells", "WrdFormatCells",
+"createCOMReference","XLSaveAs",
+"SendOutlookMail","ToWrdB", "ToWrdPlot", "WrdBookmark","WrdOpenFile"
+)
+
+
+importFrom("readxl","read_excel")
+
+
+importFrom("DescTools", "Append", "ColToRgb", "FixToTable", "Format", 
+           "IsWhole", "Recycle", "RgbToLong",
+           "RoundTo", "SetNames", "SplitToCol", "StrTrim", "Coalesce", 
+           "DescToolsOptions", "InDots")
+
+importFrom("grDevices", "dev.copy", "dev.off", "tiff")
+importFrom("graphics", "par", "layout")
+importFrom("methods", "is")
+importFrom("stats", "na.omit", "runif", "setNames", "t.test")
+importFrom("utils", "capture.output", "tail", "write.table")
+   
+
+S3method(ToWrd, default)
+S3method(ToWrd, TOne)
+S3method(ToWrd, lm)
+S3method(ToWrd, character)
+S3method(ToWrd, table)
+S3method(ToWrd, ftable)
+S3method(ToWrd, Freq)
+S3method(ToWrd, PercTable)
+S3method(ToWrd, matrix)
+S3method(ToWrd, data.frame)
+S3method(ToWrd, abstract)
+S3method(ToWrd, TMod)
+S3method(ToWrd, TwoGroups)
+S3method(ToWrd, Desc)
+
+S3method(ToXL, table)
+S3method(ToXL, array)
+S3method(ToXL, matrix)
+S3method(ToXL, data.frame)
+S3method(ToXL, default)
+
+
+
+
