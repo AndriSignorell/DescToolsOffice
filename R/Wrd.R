@@ -1,9 +1,3 @@
-
-
-
-
-
-
 .WrdPrepRep <- function(wrd, main="Bericht" ){
   
   # only internal user out from GetNewWrd()
@@ -75,279 +69,40 @@
 # }
 
 
-ToWrd <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  UseMethod("ToWrd")
-}
-
-
-# ToWrdB <- function(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"), 
-#                     bookmark=gettextf("b%s", sample(1e9, 1))){
-#   
-#   bm <- WrdInsertBookmark(name = bookmark, wrd=wrd)
-#   ToWrd(x, font=font, ..., wrd=wrd)
-#   
-#   d <- wrd$Selection()$range()$start() - bm$range()$start()
-#   wrd$Selection()$MoveLeft(Unit=wdConst$wdCharacter, Count=d, Extend=wdConst$wdExtend)
-#   
-#   bm <- WrdInsertBookmark(name = bookmark, wrd=wrd)
-#   
-#   wrd[["Selection"]]$Collapse(Direction=wdConst$wdCollapseEnd)
-#   
-#   invisible(bm)
-#   
-# }
-
-
-# function to generate random bookmark names 
-# (ensure we'll always get 9 digits with min=0.1)
-.randbm <- function() paste("bm", round(runif(1, min=0.1)*1e9), sep="")
 
 
 
-ToWrdB <- function(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"), 
-                   bookmark=gettextf("bmt%s", round(runif(1, min=0.1)*1e9))){
-  
-  # Sends the output of an object x to word and places a bookmark bm on it
-  
-  # place the temporary bookmark on cursor
-  bm_start <- WrdInsertBookmark(.randbm())
-  
-  # send stuff to Word (it's generic ...)
-  ToWrd(x, font=font, ..., wrd=wrd)
-  
-  # place end bookmark
-  bm_end <- WrdInsertBookmark(.randbm())
-  
-  # select all the inserted text between the two bookmarks
-  wrd[["ActiveDocument"]]$Range(bm_start$range()$start(), bm_end$range()$end())$select()
-  
-  # place the required bookmark over the whole inserted story
-  res <- WrdInsertBookmark(bookmark)
-  
-  # collapse selection to the end position
-  wrd$selection()$collapse(wdConst$wdCollapseEnd)
-  
-  # delete the two temporary bookmarks start/end
-  bm_start$delete()
-  bm_end$delete()
-  
-  # return the bookmark with inserted story
-  invisible(res)
-  
-}
-
-
-ToWrdPlot <- function(plotcode,  
-                      width=NULL, height=NULL, scale=100, pointsize=12, res=300, crop=0, title=NULL, 
-                      wrd = DescToolsOfficeOptions("lastWord"), 
-                      bookmark=gettextf("bmp%s", round(runif(1, min=0.1)*1e9))
-){
-  
-  if(is.null(width)) width <- 15
-  if(is.null(height)) height <- width / gold_sec_c 
-  
-  crop <- rep(crop, length.out=4)
-  
-  if(is.null(bookmark)) bookmark <- .randbm()
-  
-  
-  # open device
-  tiff(filename = (fn <- paste(tempfile(), ".tif", sep = "")), 
-       width = width, height = height, units = "cm", pointsize = pointsize,
-       res = res, compression = "lzw")
-  
-  # do plot
-  if(!is.null(plotcode ))
-    eval(parse(text = plotcode))
-  
-  # close device
-  dev.off()
-  
-  
-  # import in word ***********
-  # place the temporary bookmark on cursor
-  bm_start <- WrdInsertBookmark(.randbm(), wrd=wrd)
-  
-  # send stuff to Word (it's generic ...)
-  hwnd <- wrd$selection()$InlineShapes()$AddPicture(FileName=fn, LinkToFile=FALSE, SaveWithDocument=TRUE)
-  hwnd[["LockAspectRatio"]] <- 1
-  hwnd[["ScaleWidth"]] <- hwnd[["ScaleHeight"]] <- scale
-  pic <- hwnd$PictureFormat()
-  pic[["CropBottom"]] <- CmToPts(crop[1])
-  pic[["CropLeft"]] <- CmToPts(crop[2])
-  pic[["CropTop"]] <- CmToPts(crop[3])
-  pic[["CropRight"]] <- CmToPts(crop[4])
-  
-  if(!is.null(title)){
-    hwnd$select()
-    wrd[["Selection"]]$InsertCaption(Label="Figure", Title=gettextf(" - %s", title), 
-                                     Position=wdConst$wdCaptionPositionBelow, ExcludeLabel=0)
-    wrd[["Selection"]]$MoveRight(wdConst$wdCharacter, 1, 0)
-    
-  }
-  
-  
-  ToWrd(x="\n", wrd=wrd)
-  
-  # place end bookmark
-  bm_end <- WrdInsertBookmark(.randbm(), wrd=wrd)
-  
-  # select all the inserted text between the two bookmarks
-  wrd[["ActiveDocument"]]$Range(bm_start$range()$start(), bm_end$range()$end())$select()
-  
-  # place the required bookmark over the whole inserted story
-  res <- WrdInsertBookmark(bookmark, wrd=wrd)
-  
-  # collapse selection to the end position
-  wrd$selection()$collapse(wdConst$wdCollapseEnd)
-  
-  # delete the two temporary bookmarks start/end
-  bm_start$delete()
-  bm_end$delete()
-  
-  # return the bookmark with inserted story
-  invisible(list(plot_hwnd=hwnd, bookmark=res))
-  
-}
-
-
-
-
-
-
-
-ToWrd.default <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  
-  ToWrd.character(x=DescTools:::.CaptOut(x), font=font, ..., wrd=wrd)
-  invisible()
-  
-}
-
-
-
-ToWrd.Desc <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  
-  printWrd(x, ..., wrd=wrd)
-  invisible()
-  
-}
-
-
-
-
-ToWrd.TOne <- function(x, font=NULL, para=NULL, main=NULL, align=NULL,
-                       autofit=TRUE, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  
-  wTab <- ToWrd.table(x, main=NULL, font=font, align=align, autofit=autofit, wrd=wrd, ...)
-  
-  if(!is.null(para)){
-    wTab$Select()
-    WrdParagraphFormat(wrd) <- para
-    
-    # move out of table
-    wrd[["Selection"]]$EndOf(wdConst$wdTable)
-    wrd[["Selection"]]$MoveRight(wdConst$wdCharacter, 2, 0)
-  }
-  
-  if(is.null(font)) font <- list()
-  if(is.null(font$size))
-    font$size <- WrdFont(wrd)$size - 2
-  else
-    font$size <- font$size - 2
-  
-  wrd[["Selection"]]$TypeBackspace()
-  ToWrd.character(paste("\n", attr(x, "legend"), "\n\n", sep=""),
-                  font=font, wrd=wrd)
-  
-  
-  if(!is.null(main)){
-    sel <- wrd$Selection()  # "Abbildung"
-    sel$InsertCaption(Label=wdConst$wdCaptionTable, Title=paste(" - ", main, sep=""))
-    sel$TypeParagraph()
-    
-  }
-  
-  invisible(wTab)
-  
-}
-
-
-
-ToWrd.abstract <- function(x, font=NULL, autofit=TRUE, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  
-  WrdCaption(x=attr(x, "main"), wrd=wrd)
-  
-  if(!is.null(attr(x, "label"))){
-    
-    if(is.null(font)){
-      lblfont <- list(fontsize=8)
-    } else {
-      lblfont <- font
-      lblfont$fontsize <- 8
-    }
-    
-    ToWrd.character(paste("\n", attr(x, "label"), "\n", sep=""),
-                    font = lblfont, wrd=wrd)
-  }
-  
-  ToWrd.character(gettextf("\ndata.frame:	%s obs. of  %s variables (complete cases: %s / %s)\n\n",
-                           attr(x, "nrow"), attr(x, "ncol"), attr(x, "complete"), 
-                           DescTools::Format(attr(x, "complete")/attr(x, "nrow"), fmt="%", digits=1))
-                  , font=font, wrd=wrd)
-  
-  wTab <- ToWrd.data.frame(x, wrd=wrd, autofit=autofit, font=font, align="l", ...)
-  
-  invisible(wTab)
-  
-}
-
-
-
-ToWrd.lm <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  
-  invisible()
-}
-
-
-
-
-ToWrd.character <- function (x, font = NULL, para = NULL, style = NULL, bullet=FALSE,  ..., wrd = DescToolsOfficeOptions("lastWord")) {
-  
-  # we will convert UTF-8 strings to Latin-1, if the local info is Latin-1
-  if (any(l10n_info()[["Latin-1"]] & Encoding(x) == "UTF-8"))
-    x[Encoding(x) == "UTF-8"] <- iconv(x[Encoding(x) == "UTF-8"], from = "UTF-8", to = "latin1")
-  
-  wrd[["Selection"]]$InsertAfter(paste(x, collapse = "\n"))
-  
-  if (!is.null(style))
-    WrdStyle(wrd) <- style
-  
-  if (!is.null(para))
-    WrdParagraphFormat(wrd) <- para
-  
-  
-  if(identical(font, "fix")){
-    font <- DescToolsOfficeOptions("fixedfont")
-    if(is.null(font))
-      font <- structure(list(name="Courier New", size=8), class="font")
-  }
-  
-  if(!is.null(font)){
-    currfont <- WrdFont(wrd)
-    WrdFont(wrd) <- font
-    on.exit(WrdFont(wrd) <- currfont)
-  }
-  
-  if(bullet)
-    wrd[["Selection"]]$Range()$ListFormat()$ApplyBulletDefault()
-  
-  wrd[["Selection"]]$Collapse(Direction=wdConst$wdCollapseEnd)
-  
-  invisible()
-  
-}
-
-
+#' Insert Caption to Word
+#' 
+#' Insert a caption in a given level to a Word document. The caption is
+#' inserted at the current cursor position.
+#' 
+#' 
+#' @param x the text of the caption.
+#' @param index integer from 1 to 9, defining the number of the heading style.
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOfficeOptions("lastWord")}.
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{ToWrd}}, \code{\link{WrdPlot}},
+#' \code{\link{GetNewWrd}}, \code{\link{GetCurrWrd}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{ # Windows-specific example
+#' wrd <- GetNewWrd()
+#' 
+#' # insert a title in level 1
+#' WrdCaption("My First Caption level 1", index=1, wrd=wrd)
+#' 
+#' # works as well for several levels
+#' sapply(1:5, function(i)
+#'   WrdCaption(gettextf("My First Caption level %s",i), index=i, wrd=wrd)
+#' )
+#' }
+#' 
+#' @export WrdCaption
 WrdCaption <- function(x, index = 1, wrd = DescToolsOfficeOptions("lastWord")){
   
   lst <- Recycle(x=x, index=index)
@@ -361,289 +116,65 @@ WrdCaption <- function(x, index = 1, wrd = DescToolsOfficeOptions("lastWord")){
 }
 
 
-ToWrd.PercTable <- function(x, font=NULL, main = NULL, ..., wrd = DescToolsOfficeOptions("lastWord")){
-  ToWrd.ftable(x$ftab, font=font, main=main, ..., wrd=wrd)
-}
 
 
 
-ToWrd.data.frame <- function(x, font=NULL, main = NULL, row.names=NULL, ..., wrd = DescToolsOfficeOptions("lastWord")){
-  
-  # drops dimension names!! don't use here
-  # x <- apply(x, 2, as.character)
-  
-  x[] <- lapply(x, as.character)
-  x <- as.matrix(x)
-  
-  if(is.null(row.names))
-    if(identical(row.names(x), as.character(1:nrow(x))))
-      row.names <- FALSE
-  else
-    row.names <- TRUE
-  
-  ToWrd.table(x=x, font=font, main=main, row.names=row.names, ..., wrd=wrd)
-}
-
-
-# ToWrd.data.frame <- function(x, font=NULL, main = NULL, row.names=NULL, as.is=FALSE, ..., wrd = DescToolsOfficeOptions("lastWord")){
-#
-#   if(as.is)
-#     x <- apply(x, 2, as.character)
-#   else
-#     x <- FixToTable(capture.output(x))
-#
-#   if(is.null(row.names))
-#     if(identical(row.names, seq_along(1:nrow(x))))
-#       row.names <- FALSE
-#     else
-#       row.names <- TRUE
-#
-#     if(row.names==TRUE)
-#       x <- cbind(row.names(x), x)
-#
-#     ToWrd.table(x=x, font=font, main=main, ..., wrd=wrd)
-# }
-
-
-ToWrd.matrix <- function(x, font=NULL, main = NULL, ..., wrd = DescToolsOfficeOptions("lastWord")){
-  ToWrd.table(x=x, font=font, main=main, ..., wrd=wrd)
-}
-
-
-ToWrd.Freq <- function(x, font=NULL, main = NULL, ..., wrd = DescToolsOfficeOptions("lastWord")){
-  
-  x[,c(3,5)] <- sapply(round(x[,c(3,5)], 3), Format, digits=3)
-  
-  res <- ToWrd.data.frame(x=x, main=main, font=font, wrd=wrd)
-  
-  invisible(res)
-  
-}
-
-
-
-
-ToWrd.ftable <- function (x, font = NULL, main = NULL, align=NULL, method = "compact", ..., wrd = DescToolsOfficeOptions("lastWord")) {
-  
-  # simple version:
-  #   x <- FixToTable(capture.output(x))
-  #   ToWrd.character(x, font=font, main=main, ..., wrd=wrd)
-  
-  # let R do all the complicated formatting stuff
-  # but we can't import a not exported function, so we provide an own copy of it
-  
-  # so this is a verbatim copy of it
-  .format.ftable <- function (x, quote = TRUE, digits = getOption("digits"), method = c("non.compact",
-                                                                                        "row.compact", "col.compact", "compact"), lsep = " | ", ...)
-  {
-    if (!inherits(x, "ftable"))
-      stop("'x' must be an \"ftable\" object")
-    charQuote <- function(s) if (quote && length(s))
-      paste0("\"", s, "\"")
-    else s
-    makeLabels <- function(lst) {
-      lens <- lengths(lst)
-      cplensU <- c(1, cumprod(lens))
-      cplensD <- rev(c(1, cumprod(rev(lens))))
-      y <- NULL
-      for (i in rev(seq_along(lst))) {
-        ind <- 1 + seq.int(from = 0, to = lens[i] - 1) *
-          cplensD[i + 1L]
-        tmp <- character(length = cplensD[i])
-        tmp[ind] <- charQuote(lst[[i]])
-        y <- cbind(rep(tmp, times = cplensU[i]), y)
-      }
-      y
-    }
-    makeNames <- function(x) {
-      nmx <- names(x)
-      if (is.null(nmx))
-        rep_len("", length(x))
-      else nmx
-    }
-    l.xrv <- length(xrv <- attr(x, "row.vars"))
-    l.xcv <- length(xcv <- attr(x, "col.vars"))
-    method <- match.arg(method)
-    if (l.xrv == 0) {
-      if (method == "col.compact")
-        method <- "non.compact"
-      else if (method == "compact")
-        method <- "row.compact"
-    }
-    if (l.xcv == 0) {
-      if (method == "row.compact")
-        method <- "non.compact"
-      else if (method == "compact")
-        method <- "col.compact"
-    }
-    LABS <- switch(method, non.compact = {
-      cbind(rbind(matrix("", nrow = length(xcv), ncol = length(xrv)),
-                  charQuote(makeNames(xrv)), makeLabels(xrv)), c(charQuote(makeNames(xcv)),
-                                                                 rep("", times = nrow(x) + 1)))
-    }, row.compact = {
-      cbind(rbind(matrix("", nrow = length(xcv) - 1, ncol = length(xrv)),
-                  charQuote(makeNames(xrv)), makeLabels(xrv)), c(charQuote(makeNames(xcv)),
-                                                                 rep("", times = nrow(x))))
-    }, col.compact = {
-      cbind(rbind(cbind(matrix("", nrow = length(xcv), ncol = length(xrv) -
-                                 1), charQuote(makeNames(xcv))), charQuote(makeNames(xrv)),
-                  makeLabels(xrv)))
-    }, compact = {
-      xrv.nms <- makeNames(xrv)
-      xcv.nms <- makeNames(xcv)
-      mat <- cbind(rbind(cbind(matrix("", nrow = l.xcv - 1,
-                                      ncol = l.xrv - 1), charQuote(makeNames(xcv[-l.xcv]))),
-                         charQuote(xrv.nms), makeLabels(xrv)))
-      mat[l.xcv, l.xrv] <- paste(tail(xrv.nms, 1), tail(xcv.nms,
-                                                        1), sep = lsep)
-      mat
-    }, stop("wrong method"))
-    DATA <- rbind(if (length(xcv))
-      t(makeLabels(xcv)), if (method %in% c("non.compact",
-                                            "col.compact"))
-        rep("", times = ncol(x)), format(unclass(x), digits = digits,
-                                         ...))
-    cbind(apply(LABS, 2L, format, justify = "left"), apply(DATA,
-                                                           2L, format, justify = "right"))
-  }
-  
-  
-  tab <- .format.ftable(x, quote=FALSE, method=method, lsep="")
-  tab <- StrTrim(tab)
-  
-  if(is.null(align))
-    align <- c(rep("l", length(attr(x, "row.vars"))), rep("r", ncol(x)))
-  
-  wtab <- ToWrd.table(tab, font=font, main=main, align=align, ..., wrd=wrd)
-  
-  invisible(wtab)
-  
-}
-
-
-
-
-ToWrd.table <- function (x, font = NULL, main = NULL, align=NULL, tablestyle=NULL, autofit = TRUE,
-                         row.names=TRUE, col.names=TRUE, ..., wrd = DescToolsOfficeOptions("lastWord")) {
-  
-  
-  x[] <- as.character(x)
-  if (any(l10n_info()[["Latin-1"]] & Encoding(x) == "UTF-8"))
-    x[Encoding(x) == "UTF-8"] <- iconv(x[Encoding(x) == "UTF-8"], from = "UTF-8", to = "latin1")
-  
-  # add column names to character table
-  if(col.names)
-    x <- rbind(colnames(x), x)
-  if(row.names){
-    rown <- rownames(x)
-    # if(col.names)
-    #   rown <- c("", rown)
-    x <- cbind(rown, x)
-  }
-  # replace potential \n in table with /cr, as convertToTable would make a new cell for them
-  x <- gsub(pattern= "\n", replacement = "/cr", x = x)
-  # paste the cells and separate by \t
-  txt <- paste(apply(x, 1, paste, collapse="\t"), collapse="\n")
-  
-  nc <- ncol(x)
-  nr <- nrow(x)
-  
-  # insert and convert
-  wrd[["Selection"]]$InsertAfter(txt)
-  wrdTable <- wrd[["Selection"]]$ConvertToTable(Separator = wdConst$wdSeparateByTabs,
-                                                NumColumns = nc,  NumRows = nr,
-                                                AutoFitBehavior = wdConst$wdAutoFitFixed)
-  
-  wrdTable[["ApplyStyleHeadingRows"]] <- col.names
-  
-  # replace /cr by \n again in word
-  wrd[["Selection"]][["Find"]]$ClearFormatting()
-  wsel <- wrd[["Selection"]][["Find"]]
-  wsel[["Text"]] <- "/cr"
-  wrep <- wsel[["Replacement"]]
-  wrep[["Text"]] <- "^l"
-  wsel$Execute(Replace=wdConst$wdReplaceAll)
-  
-  
-  # http://www.thedoctools.com/downloads/DocTools_List_Of_Built-in_Style_English_Danish_German_French.pdf
-  if(is.null(tablestyle)){
-    WrdTableBorders(wrdTable, from=c(1,1), to=c(1, nc),
-                    border = wdConst$wdBorderTop)
-    if(col.names)
-      WrdTableBorders(wrdTable, from=c(1,1), to=c(1, nc),
-                      border = wdConst$wdBorderBottom)
-    
-    WrdTableBorders(wrdTable, from=c(nr, 1), to=c(nr, nc),
-                    border = wdConst$wdBorderBottom)
-    
-    space <- RoundTo((if(is.null(font$size)) WrdFont(wrd)$size else font$size) * .2, multiple = .5)
-    wrdTable$Rows(1)$Select()
-    WrdParagraphFormat(wrd) <- list(SpaceBefore=space, SpaceAfter=space)
-    
-    if(col.names){
-      wrdTable$Rows(2)$Select()
-      WrdParagraphFormat(wrd) <- list(SpaceBefore=space)
-    }
-    
-    wrdTable$Rows(nr)$Select()
-    WrdParagraphFormat(wrd) <- list(SpaceAfter=space)
-    
-    # wrdTable[["Style"]] <- -115 # code for "Tabelle Klassisch 1"
-  } else
-    if(!is.na(tablestyle))
-      wrdTable[["Style"]] <- tablestyle
-  
-  
-  # align the columns
-  if(is.null(align))
-    align <- c(rep("l", row.names), rep(x = "r", nc-row.names))
-  else
-    align <- rep(align, length.out=nc)
-  
-  align[align=="l"] <- wdConst$wdAlignParagraphLeft
-  align[align=="c"] <- wdConst$wdAlignParagraphCenter
-  align[align=="r"] <- wdConst$wdAlignParagraphRight
-  
-  for(i in seq_along(align)){
-    wrdTable$Columns(i)$Select()
-    wrdSel <- wrd[["Selection"]]
-    wrdSel[["ParagraphFormat"]][["Alignment"]] <- align[i]
-  }
-  
-  if(!is.null(font)){
-    wrdTable$Select()
-    WrdFont(wrd) <- font
-  }
-  
-  if(autofit)
-    wrdTable$Columns()$AutoFit()
-  
-  
-  # this will get us out of the table and put the text cursor directly behind it
-  wrdTable$Select()
-  wrd[["Selection"]]$Collapse(wdConst$wdCollapseEnd)
-  
-  # instead of coarsely moving to the end of the document ...
-  # Selection.GoTo What:=wdGoToPercent, Which:=wdGoToLast
-  # wrd[["Selection"]]$GoTo(What = wdConst$wdGoToPercent, Which= wdConst$wdGoToLast)
-  
-  if(!is.null(main)){
-    # insert caption
-    sel <- wrd$Selection()  
-    sel$InsertCaption(Label=wdConst$wdCaptionTable, Title=paste(" - ", main, sep=""))
-    sel$TypeParagraph()
-    
-  }
-  
-  wrd[["Selection"]]$TypeParagraph()
-  
-  invisible(wrdTable)
-  
-}
-
-
-
-
+#' Draw Borders to a Word Table
+#' 
+#' Drawing borders in a Word table is quite tedious. This function allows to
+#' select any range and draw border lines around it.
+#' 
+#' 
+#' @param wtab a pointer to a Word table as returned by \code{\link{WrdTable}}
+#' or \code{\link{TOne}}.
+#' @param from integer, a vector with two elements specifying the left upper
+#' bound of the cellrange.
+#' @param to integer, a vector with two elements specifying the right bottom of
+#' the cellrange.
+#' @param border a Word constant (\code{wdConst$wdBorder...}) defining the side
+#' of the border.
+#' @param lty a Word constant (\code{wdConst$wdLineStyle...}) defining the line
+#' type.
+#' @param col a Word constant (\code{wdConst$wdColor...}) defining the color of
+#' the border. See examples for converting R colors to Word colors.
+#' @param lwd a Word constant (\code{wdConst$wdLineWidth...pt}) defining the
+#' line width.
+#' @return nothing
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{WrdTable}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{
+#' 
+#' # create table
+#' tab <- table(op=d.pizza$operator, area=d.pizza$area)
+#' 
+#' # send it to Word
+#' wrd <- GetNewWrd()
+#' wtab <- ToWrd(tab, wrd=wrd, tablestyle = NA)
+#' 
+#' # draw borders
+#' WrdTableBorders(wtab, from=c(2,2), to=c(3,3), border=wdConst$wdBorderBottom, wrd=wrd)
+#' WrdTableBorders(wtab, from=c(2,2), to=c(3,3), border=wdConst$wdBorderDiagonalUp, wrd=wrd)
+#' 
+#' # demonstrate linewidth and color
+#' wtab <- ToWrd(tab, wrd=wrd, tablestyle = NA)
+#' WrdTableBorders(wtab, col=RgbToLong(ColToRgb("olivedrab")),
+#'                 lwd=wdConst$wdLineWidth150pt, wrd=wrd)
+#' 
+#' WrdTableBorders(wtab, border=wdConst$wdBorderBottom,
+#'                 col=RgbToLong(ColToRgb("dodgerblue")),
+#'                 lwd=wdConst$wdLineWidth300pt, wrd=wrd)
+#' 
+#' # use an R color in Word
+#' RgbToLong(ColToRgb("olivedrab"))
+#' 
+#' # find a similar R-color for a Word color
+#' ColToRgb(RgbToCol(LongToRgb(wdConst$wdColorAqua)))
+#' }
+#' 
+#' @export WrdTableBorders
 WrdTableBorders <- function (wtab, from = NULL, to = NULL, border = NULL,
                              lty = wdConst$wdLineStyleSingle, col=wdConst$wdColorBlack,
                              lwd = wdConst$wdLineWidth050pt) {
@@ -681,6 +212,37 @@ WrdTableBorders <- function (wtab, from = NULL, to = NULL, border = NULL,
 
 
 
+
+
+#' Return the Cell Range Of a Word Table
+#' 
+#' Return a handle of a cell range of a word table. This is useful for
+#' formating the cell range.
+#' 
+#' Cell range selecting might be complicated. This function makes it easy.
+#' 
+#' @param wtab a handle to the word table as returned i.g. by
+#' \code{\link{WrdTable}}
+#' @param from a vector containing row- and column number of the left/upper
+#' cell of the cell range.
+#' @param to a vector containing row- and column number of the right/lower cell
+#' of the cell range.
+#' @return a handle to the range.
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{WrdTable}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{
+#' 
+#' # Windows-specific example
+#' wrd <- GetNewWrd()
+#' WrdTable(nrow=3, ncol=3, wrd=wrd)
+#' crng <- WrdCellRange(from=c(1,2), to=c(2,3))
+#' crng$Select()
+#' }
+#' 
+#' @export WrdCellRange
 WrdCellRange <- function(wtab, from, to) {
   # returns a handle for the table range
   wtrange <- wtab[["Parent"]]$Range(
@@ -692,6 +254,32 @@ WrdCellRange <- function(wtab, from, to) {
 }
 
 
+
+
+#' Merges Cells Of a Defined Word Table Range
+#' 
+#' Merges a cell range of a word table.
+#' 
+#' 
+#' @param wtab a handle to the word table as returned i.g. by
+#' \code{\link{WrdTable}}
+#' @param rstart the left/upper cell of the cell range.
+#' @param rend the right/lower cell of the cell range.
+#' @return nothing
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{WrdTable}}, \code{\link{WrdCellRange}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{
+#' 
+#' # Windows-specific example
+#' wrd <- GetNewWrd()
+#' wtab <- WrdTable(nrow=3, ncol=3, wrd=wrd)
+#' WrdMergeCells(wtab, rstart=c(1,2), rend=c(2,3))
+#' }
+#' 
+#' @export WrdMergeCells
 WrdMergeCells <- function(wtab, rstart, rend) {
   
   rng <- WrdCellRange(wtab, rstart, rend)
@@ -699,6 +287,55 @@ WrdMergeCells <- function(wtab, rstart, rend) {
   
 }
 
+
+
+#' Format Cells Of a Word Table
+#' 
+#' Format cells of a Word table.
+#' 
+#' Cell range selecting might be complicated. This function makes it easy.
+#' 
+#' @param wtab a handle to the word table as returned i.g. by
+#' \code{\link{WrdTable}}
+#' @param rstart the left/upper cell of the cell range
+#' @param rend the right/lower cell of the cell range
+#' @param col the foreground colour
+#' @param bg the background colour
+#' @param font the font to be used to the output. This should be defined as a
+#' list containing fontname, fontsize, bold and italic flags:\cr
+#' \code{list(name="Arial", size=10, bold=FALSE, italic=TRUE,
+#' color=wdConst$wdColorBlack)}.
+#' @param border the border of the cell range, defined as a list containing
+#' arguments for border, linestyle, linewidth and color. \code{border} is a
+#' vector containing the parts of the border defined by the Word constants
+#' \code{wdConst$wdBorder...}, being $wdBorderBottom, $wdBorderLeft,
+#' $wdBorderTop, $wdBorderRight, $wdBorderHorizontal, $wdBorderVertical,
+#' $wdBorderDiagonalUp, $wdBorderDiagonalDown. linestyle, linewidth and color
+#' will be recycled to the required dimension.
+#' @param align a character out of \code{"l"}, \code{"c"}, \code{"r"} setting
+#' the horizontal alignment of the cell range.
+#' @return a handle to the range.
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{WrdTable}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{   # Windows-specific example
+#' 
+#' m <- matrix(rnorm(12)*100, nrow=4,
+#'             dimnames=list(LETTERS[1:4], c("Variable","Value","Remark")))
+#' 
+#' wrd <- GetNewWrd()
+#' wt <- ToWrd(m)
+#' 
+#' WrdFormatCells(wt, rstart=c(3,1), rend=c(4,3),
+#'                bg=wdConst$wdColorGold, font=list(name="Arial Narrow", bold=TRUE),
+#'                align="c", border=list(color=wdConst$wdColorTeal,
+#'                                       linewidth=wdConst$wdLineWidth300pt))
+#' 
+#' }
+#' 
+#' @export WrdFormatCells
 WrdFormatCells <- function(wtab, rstart, rend, col=NULL, bg=NULL, font=NULL,
                            border=NULL, align=NULL){
   
@@ -777,6 +414,46 @@ WrdFormatCells <- function(wtab, rstart, rend, col=NULL, bg=NULL, font=NULL,
 
 # Get and set font
 
+
+
+#' Get or Set the Font in Word
+#' 
+#' \code{WrdFont} can be used to get and set the font in Word for the text to
+#' be inserted. \code{WrdFont} returns the font at the current cursor position.
+#' 
+#' The font color can be defined by a Word constant beginning with
+#' \code{wdConst$wdColor}. The defined colors can be listed with
+#' \code{grep("wdColor", names(wdConst), val=TRUE)}.
+#' 
+#' @aliases WrdFont WrdFont<-
+#' @param value the font to be used to the output. This should be defined as a
+#' list containing fontname, fontsize, bold and italic flags:\cr
+#' \code{list(name="Arial", size=10, bold=FALSE, italic=TRUE,
+#' color=wdConst$wdColorBlack)}.
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOfficeOptions("lastWord")}.
+#' @return a list of the attributes of the font in the current cursor position:
+#' \item{name}{the fontname} \item{size}{the fontsize} \item{bold}{bold}
+#' \item{italic}{italic} \item{color}{the fontcolor}
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{ToWrd}}, \code{\link{WrdPlot}},
+#' \code{\link{GetNewWrd}}, \code{\link{GetCurrWrd}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{ # Windows-specific example
+#' 
+#' wrd <- GetNewWrd()
+#' 
+#' for(i in seq(10, 24, 2))
+#'   ToWrd(gettextf("This is Arial size %s \n", i), font=list(name="Arial", size=i))
+#' 
+#' for(i in seq(10, 24, 2))
+#'   ToWrd(gettextf("This is Times size %s \n", i), font=list(name="Times", size=i))
+#' }
+#' @export WrdFont
 WrdFont <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
   # returns the font object list: list(name, size, bold, italic) on the current position
   
@@ -796,7 +473,7 @@ WrdFont <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
   return(currfont)
 }
 
-
+#' @rdname WrdFont
 `WrdFont<-` <- function(wrd, value){
   
   wrdSel <- wrd[["Selection"]]
@@ -816,6 +493,99 @@ WrdFont <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
 
 # Get and set ParagraphFormat
 
+
+
+#' Get or Set the Paragraph Format in Word
+#' 
+#' \code{WrdParagraphFormat} can be used to get and set the font in Word for
+#' the text to be inserted.
+#' 
+#' 
+#' @aliases WrdParagraphFormat WrdParagraphFormat<-
+#' @param value a list defining the paragraph format.  This can contain any
+#' combination of: \code{LeftIndent}, \code{RightIndent}, \code{SpaceBefore},
+#' \code{SpaceBeforeAuto}, \code{SpaceAfter}, \code{SpaceAfterAuto},
+#' \code{LineSpacingRule}, \code{Alignment}, \code{WidowControl},
+#' \code{KeepWithNext}, \code{KeepTogether}, \code{PageBreakBefore},
+#' \code{NoLineNumber}, \code{Hyphenation}, \code{FirstLineIndent},
+#' \code{OutlineLevel}, \code{CharacterUnitLeftIndent},
+#' \code{CharacterUnitRightIndent}, \code{CharacterUnitFirstLineIndent},
+#' \code{LineUnitBefore}, \code{LineUnitAfter} and/or \code{MirrorIndents}.
+#' The possible values of the arguments are found in the Word constants with
+#' the respective name. \cr The alignment for example can be set to
+#' \code{wdAlignParagraphLeft}, \code{wdAlignParagraphRight},
+#' \code{wdAlignParagraphCenter} and so on.  \cr Left alignment with
+#' indentation would be set as:\cr
+#' \code{list(Alignment=wdConst$wdAlignParagraphLeft, LeftIndent=42.55)}.
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOfficeOptions("lastWord")}.
+#' @return an object with the class \code{paragraph}, basically a list with the
+#' attributes of the paragraph in the current cursor position:
+#' \item{LeftIndent}{left indentation in (in points) for the specified
+#' paragraphs.} \item{RightIndent}{right indent (in points) for the specified
+#' paragraphs.} \item{SpaceBefore}{spacing (in points) before the specified
+#' paragraphs.} \item{SpaceBeforeAuto}{\code{TRUE} if Microsoft Word
+#' automatically sets the amount of spacing before the specified paragraphs.}
+#' \item{SpaceAfter}{amount of spacing (in points) after the specified
+#' paragraph or text column.} \item{SpaceAfterAuto}{\code{TRUE} if Microsoft
+#' Word automatically sets the amount of spacing after the specified
+#' paragraphs.} \item{LineSpacingRule}{line spacing for the specified paragraph
+#' formatting. Use \code{wdLineSpaceSingle}, \code{wdLineSpace1pt5}, or
+#' \code{wdLineSpaceDouble} to set the line spacing to one of these values. To
+#' set the line spacing to an exact number of points or to a multiple number of
+#' lines, you must also set the \code{LineSpacing} property.}
+#' \item{Alignment}{\code{WdParagraphAlignment} constant that represents the
+#' alignment for the specified paragraphs.} \item{WidowControl}{\code{TRUE} if
+#' the first and last lines in the specified paragraph remain on the same page
+#' as the rest of the paragraph when Word repaginates the document. Can be
+#' \code{TRUE}, \code{FALSE} or \code{wdUndefined}.}
+#' \item{KeepWithNext}{\code{TRUE} if the specified paragraph remains on the
+#' same page as the paragraph that follows it when Microsoft Word repaginates
+#' the document. Read/write Long.} \item{KeepTogether}{\code{TRUE} if all lines
+#' in the specified paragraphs remain on the same page when Microsoft Word
+#' repaginates the document.} \item{PageBreakBefore}{\code{TRUE} if a page
+#' break is forced before the specified paragraphs. Can be \code{TRUE},
+#' \code{FALSE}, or \code{wdUndefined}.} \item{NoLineNumber}{\code{TRUE} if
+#' line numbers are repressed for the specified paragraphs. Can be \code{TRUE},
+#' \code{FALSE}, or \code{wdUndefined}.} \item{Hyphenation}{\code{TRUE} if the
+#' specified paragraphs are included in automatic hyphenation. \code{FALSE} if
+#' the specified paragraphs are to be excluded from automatic hyphenation.}
+#' \item{FirstLineIndent}{value (in points) for a first line or hanging indent.
+#' Use a positive value to set a first-line indent, and use a negative value to
+#' set a hanging indent.} \item{OutlineLevel}{outline level for the specified
+#' paragraphs.} \item{CharacterUnitLeftIndent}{left indent value (in
+#' characters) for the specified paragraphs.}
+#' \item{CharacterUnitRightIndent}{right indent value (in characters) for the
+#' specified paragraphs. } \item{LineUnitBefore}{amount of spacing (in
+#' gridlines) before the specified paragraphs. } \item{LineUnitAfter}{amount of
+#' spacing (in gridlines) after the specified paragraphs.}
+#' \item{MirrorIndents}{Long that represents whether left and right indents are
+#' the same width. Can be \code{TRUE}, \code{FALSE}, or \code{wdUndefined}.}
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{ToWrd}}, \code{\link{WrdPlot}},
+#' \code{\link{GetNewWrd}}, \code{\link{GetCurrWrd}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{
+#' # Windows-specific example
+#' wrd <- GetNewWrd()  # get the handle to a new word instance
+#' 
+#' WrdParagraphFormat(wrd=wrd) <- list(Alignment=wdConst$wdAlignParagraphLeft,
+#'                                     LeftIndent=42.55)
+#' 
+#' ToWrd("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+#' eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+#' At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+#' gubergren, no sea takimata sanctus est.\n", wrd=wrd)
+#' 
+#' # reset
+#' WrdParagraphFormat(wrd=wrd) <- list(LeftIndent=0)
+#' }
+#' 
+#' @export WrdParagraphFormat
 WrdParagraphFormat <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
   
   wrdPar <- wrd[["Selection"]][["ParagraphFormat"]]
@@ -851,7 +621,7 @@ WrdParagraphFormat <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
 }
 
 
-
+#' @rdname WrdParagraphFormat
 `WrdParagraphFormat<-` <- function(wrd, value){
   
   wrdPar <- wrd[["Selection"]][["ParagraphFormat"]]
@@ -893,13 +663,43 @@ WrdParagraphFormat <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
 }
 
 
+
+
+#' Get or Set the Style in Word
+#' 
+#' \code{WrdStyle} can be used to get and set the style in Word for the text to
+#' be inserted. \code{WrdStyle} returns the style at the current cursor
+#' position.
+#' 
+#' 
+#' @aliases WrdStyle WrdStyle<-
+#' @param value the name of the style to be used to the output. This should be
+#' defined an existing name.
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOfficeOptions("lastWord")}.
+#' @return character, name of the style
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{ToWrd}}, \code{\link{WrdPlot}},
+#' \code{\link{GetNewWrd}}, \code{\link{GetCurrWrd}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{ # Windows-specific example
+#' 
+#' wrd <- GetNewWrd()
+#' # the current stlye
+#' WrdStyle(wrd)
+#' }
+#' @export WrdStyle
 WrdStyle <- function (wrd = DescToolsOfficeOptions("lastWord")) {
   wrdSel <- wrd[["Selection"]]
   wrdStyle <- wrdSel[["Style"]][["NameLocal"]]
   return(wrdStyle)
 }
 
-
+#' @rdname WrdStyle
 `WrdStyle<-` <- function (wrd, value) {
   wrdSel <- wrd[["Selection"]][["Paragraphs"]]
   wrdSel[["Style"]] <- value
@@ -909,135 +709,38 @@ WrdStyle <- function (wrd = DescToolsOfficeOptions("lastWord")) {
 
 
 
-WrdGoto <- function (name, what = wdConst$wdGoToBookmark, wrd = DescToolsOfficeOptions("lastWord")) {
-  wrdSel <- wrd[["Selection"]]
-  
-  if(what == wdConst$wdGoToBookmark){
-    wrdBookmarks <- wrd[["ActiveDocument"]][["Bookmarks"]]
-    if(wrdBookmarks$exists(name)){
-      wrdSel$GoTo(what=what, Name=name)
-      res <- TRUE
-    } else {
-      warning(gettextf("Bookmark %s does not exist, so there's nothing to select", name))
-      res <- FALSE
-    }
-  } else {
-    wrdSel$GoTo(what=what, Name=name)
-    
-  }
-  
-  invisible()
-}
 
 
 
 
-
-
+#' Insert a Page Break
+#' 
+#' Insert a page break in a MS-Word (R) document at the position of the cursor.
+#' 
+#' 
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOfficeOptions("lastWord")}.
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{WrdFont}}, \code{\link{WrdPlot}},
+#' \code{\link{GetNewWrd}}, \code{\link{GetCurrWrd}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{ # Windows-specific example
+#' wrd <- GetNewWrd()
+#' WrdText("This is text on page 1.\n\n")
+#' WrdPageBreak()
+#' WrdText("This is text on another page.\n\n")
+#' }
+#' @export WrdPageBreak
 WrdPageBreak <- function(wrd = DescToolsOfficeOptions("lastWord")) {
   wrd[["Selection"]]$InsertBreak(wdConst$wdSectionBreakNextPage)
   invisible()
 }
 
 
-
-WrdBookmark <- function(name, wrd = DescToolsOfficeOptions("lastWord")){
-  
-  wbms <- wrd[["ActiveDocument"]][["Bookmarks"]]
-  
-  if(wbms$count()>0){
-    # get bookmark names
-    bmnames <- sapply(seq(wbms$count()), function(i) wbms[[i]]$name())
-    
-    id <- which(name == bmnames)
-    
-    if(length(id)==0)   # name found?
-      res <- NULL 
-    
-    else
-      res <- wbms[[id]]
-    # no attributes for S4 objects... :-(
-    #  res@idx <- which(name == bmnames)
-    
-  } else {
-    # warning(gettextf("bookmark %s not found", bookmark))
-    res <- NULL
-  }
-  
-  return(res)  
-  
-}
-
-
-# WrdGetBookmarkID <- function(name, wrd = DescToolsOfficeOptions("lastWord")){
-#   
-#   wrdBookmarks <- wrd[["ActiveDocument"]][["Bookmarks"]]
-#   
-#   if(wrdBookmarks$exists(name)){
-#     if((n <- wrdBookmarks$count()) > 0) {
-#       for(i in 1:n){
-#         if(name == wrdBookmarks[[i]]$name())
-#           return(i)
-#       }
-#     }
-#   } else {
-#     warning(gettextf("Bookmark %s does not exist.", name))
-#     return(NA_integer_)
-#   }
-#   
-# }
-
-
-
-
-WrdInsertBookmark <- function (name, wrd = DescToolsOfficeOptions("lastWord")) {
-  
-  #   With ActiveDocument.Bookmarks
-  #   .Add Range:=Selection.Range, Name:="entb"
-  #   .DefaultSorting = wdSortByName
-  #   .ShowHidden = False
-  #   End With
-  
-  wrdBookmarks <- wrd[["ActiveDocument"]][["Bookmarks"]]
-  bookmark <- wrdBookmarks$Add(name)
-  invisible(bookmark)
-}
-
-
-WrdUpdateBookmark <- function (name, text, what = wdConst$wdGoToBookmark, wrd = DescToolsOfficeOptions("lastWord")) {
-  
-  #   With ActiveDocument.Bookmarks
-  #   .Add Range:=Selection.Range, Name:="entb"
-  #   .DefaultSorting = wdSortByName
-  #   .ShowHidden = False
-  #   End With
-  
-  wrdSel <- wrd[["Selection"]]
-  wrdSel$GoTo(What=what, Name=name)
-  wrdSel[["Text"]] <- text
-  # the bookmark will be deleted, how can we avoid that?
-  wrdBookmarks <- wrd[["ActiveDocument"]][["Bookmarks"]]
-  wrdBookmarks$Add(name)
-  invisible()
-}
-
-
-
-
-WrdDeleteBookmark <- function(name, wrd = DescToolsOfficeOptions("lastWord")){
-  
-  wrdBookmarks <- wrd[["ActiveDocument"]][["Bookmarks"]]
-  if(wrdBookmarks$exists(name)){
-    WrdBookmark(name)$Delete()
-    res <- TRUE
-  } else {
-    warning(gettextf("Bookmark %s does not exist, so there's nothing to delete", name))
-    res <- FALSE
-  }
-  
-  return(res)
-  # TRUE for success / FALSE for fail
-}  
 
 
 
@@ -1111,6 +814,34 @@ WrdOpenFile <- function(fn, wrd = DescToolsOfficeOptions("lastWord")){
 
 
 
+
+
+#' Open and Save Word Documents
+#' 
+#' Open and save MS-Word documents.
+#' 
+#' 
+#' @aliases WrdSaveAs WrdOpenFile
+#' @param fn filename and -path for the document.
+#' @param fileformat file format, one out of \code{"doc"}, \code{"htm"},
+#' \code{"pdf"}.
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOfficeOptions("lastWord")}.
+#' @return nothing returned
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{GetNewWrd}()}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{
+#' #   Windows-specific example
+#' wrd <- GetNewWrd()
+#' WrdCaption("A Report")
+#' WrdSaveAs(fn="report", fileformat="htm")
+#' }
+#' @export WrdSaveAs
 WrdSaveAs <- function(fn, fileformat="docx", wrd = DescToolsOfficeOptions("lastWord")) {
   
   wdConst$wdExportFormatPDF <- 17
@@ -1153,6 +884,66 @@ PtsToCm <- function(x) x / 28.35
 # http://msdn.microsoft.com/en-us/library/bb214076(v=office.12).aspx
 
 
+
+
+#' Insert Active Plot to Word
+#' 
+#' This function inserts the plot on the active plot device to Word. The image
+#' is transferred by saving the picture to a file in R and inserting the file
+#' in Word. The format of the plot can be selected, as well as crop options and
+#' the size factor for inserting.
+#' 
+#' 
+#' @param type the format for the picture file, default is \code{"png"}.
+#' @param append.cr should a carriage return be appended? Default is TRUE.
+#' @param crop crop options for the picture, defined by a 4-elements-vector.
+#' The first element is the bottom side, the second the left and so on.
+#' @param main a caption for the plot. This will be inserted by InserCaption in
+#' Word. Default is NULL, which will insert nothing.
+#' @param picscale scale factor of the picture in percent, default ist 100.
+#' @param height height in cm, this overrides the picscale if both are given.
+#' @param width width in cm, this overrides the picscale if both are given.
+#' @param res resolution for the png file, defaults to 300.
+#' @param dfact the size factor for the graphic.
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOfficeOptions("lastWord")}.
+#' @return Returns a pointer to the inserted picture.
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{ToWrd}}, \code{\link{WrdCaption}},
+#' \code{\link{GetNewWrd}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{ # Windows-specific example
+#' # let's have some graphics
+#' plot(1,type="n", axes=FALSE, xlab="", ylab="", xlim=c(0,1), ylim=c(0,1), asp=1)
+#' rect(0,0,1,1,col="black")
+#' segments(x0=0.5, y0=seq(0.632,0.67, length.out=100),
+#'   y1=seq(0.5,0.6, length.out=100), x1=1, col=rev(rainbow(100)))
+#' polygon(x=c(0.35,0.65,0.5), y=c(0.5,0.5,0.75), border="white",
+#'   col="black", lwd=2)
+#' segments(x0=0,y0=0.52, x1=0.43, y1=0.64, col="white", lwd=2)
+#' x1 <- seq(0.549,0.578, length.out=50)
+#' segments(x0=0.43, y0=0.64, x1=x1, y1=-tan(pi/3)* x1 + tan(pi/3) * 0.93,
+#'   col=rgb(1,1,1,0.35))
+#' 
+#' 
+#' # get a handle to a new word instance
+#' wrd <- GetNewWrd()
+#' # insert plot with a specified height
+#' WrdPlot(wrd=wrd, height=5)
+#' ToWrd("Remember?\n", fontname="Arial", fontsize=14, bold=TRUE, wrd=wrd)
+#' # crop the picture
+#' WrdPlot(wrd=wrd, height=5, crop=c(9,9,0,0))
+#' 
+#' 
+#' wpic <- WrdPlot(wrd=wrd, height=5, crop=c(9,9,0,0))
+#' wpic
+#' }
+#' 
+#' @export WrdPlot
 WrdPlot <- function( type="png", append.cr=TRUE, crop=c(0,0,0,0), main = NULL,
                      picscale=100, height=NA, width=NA, res=300, dfact=1.6, wrd = DescToolsOfficeOptions("lastWord") ){
   
@@ -1231,6 +1022,40 @@ WrdPlot <- function( type="png", append.cr=TRUE, crop=c(0,0,0,0), main = NULL,
 
 
 
+
+
+#' Insert a Table in a Word Document
+#' 
+#' Create a table with a specified number of rows and columns in a Word
+#' document at the current position of the cursor.
+#' 
+#' 
+#' @param nrow number of rows.
+#' @param ncol number of columns.
+#' @param heights a vector of the row heights (in [cm]). If set to \code{NULL}
+#' (which is the default) the Word defaults will be used. The values will be
+#' recyled, if necessary.
+#' @param widths a vector of the column widths (in [cm]). If set to \code{NULL}
+#' (which is the default) the Word defaults will be used. The values will be
+#' recyled, if necessary.
+#' @param main a caption for the plot. This will be inserted by InserCaption in
+#' Word. Default is NULL, which will insert nothing.
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOfficeOptions("lastWord")}.
+#' @return A pointer to the inserted table.
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{GetNewWrd}}, \code{\link{ToWrd}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{ # Windows-specific example
+#' wrd <- GetNewWrd()
+#' WrdTable(nrow=3, ncol=3, wrd=wrd)
+#' }
+#' 
+#' @export WrdTable
 WrdTable <- function(nrow = 1, ncol = 1, heights = NULL, widths = NULL, main = NULL, wrd = DescToolsOfficeOptions("lastWord")){
   
   res <- wrd[["ActiveDocument"]][["Tables"]]$Add(wrd[["Selection"]][["Range"]],
@@ -1463,22 +1288,6 @@ WrdTable <- function(nrow = 1, ncol = 1, heights = NULL, widths = NULL, main = N
 # , wrd=wrd, width=17, crop=c(0,0,60,0))
 
 
-
-###
-
-
-WrdKill <- function(){
-  # Word might not always quit and end the task
-  # so killing the task is "ultima ratio"...
-  
-  shell('taskkill /F /IM WINWORD.EXE')
-}
-
-
-
-
-
-###
 
 
 ## Entwicklungs-Ideen ====
