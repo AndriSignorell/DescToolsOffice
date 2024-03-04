@@ -1,18 +1,14 @@
 \name{WrdParagraphFormat}
 \alias{WrdParagraphFormat}
 \alias{WrdParagraphFormat<-}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Get or Set the Paragraph Format in Word
-%%  ~~function to do ... ~~
 }
 \description{\code{WrdParagraphFormat} can be used to get and set the font in Word for the text to be inserted.
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
 WrdParagraphFormat(wrd = DescToolsOfficeOptions("lastWord"))
 WrdParagraphFormat(wrd) <- value
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{value}{
   a list defining the paragraph format.
@@ -23,7 +19,6 @@ WrdParagraphFormat(wrd) <- value
   \code{CharacterUnitRightIndent}, \code{CharacterUnitFirstLineIndent}, \code{LineUnitBefore}, \code{LineUnitAfter} and/or \code{MirrorIndents}.
   The possible values of the arguments are found in the Word constants with the respective name. \cr The alignment for example can be set to \code{wdAlignParagraphLeft}, \code{wdAlignParagraphRight}, \code{wdAlignParagraphCenter} and so on.
   \cr Left alignment with indentation would be set as:\cr \code{list(Alignment=wdConst$wdAlignParagraphLeft, LeftIndent=42.55)}.
-%%     ~~Describe \code{font} here~~
 
 }
   \item{wrd}{the pointer to a word instance. Can be a new one, created by \code{GetNewWrd()}
@@ -79,7 +74,5 @@ gubergren, no sea takimata sanctus est.\n", wrd=wrd)
 WrdParagraphFormat(wrd=wrd) <- list(LeftIndent=0)
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ print }
 \concept{MS-Office}

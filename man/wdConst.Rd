@@ -25,8 +25,6 @@ $ wd10Sentences: num -2\cr
 ...\cr
 }
 
-\source{Microsoft
-%%  ~~ reference to a publication or URL from which the data were obtained ~~
-}
+\source{Microsoft}
 
 \keyword{datasets}

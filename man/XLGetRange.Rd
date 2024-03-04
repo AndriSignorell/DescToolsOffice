@@ -4,14 +4,11 @@
 \alias{XLCurrReg}
 \alias{XLNamedReg}
 
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Import Data Directly From Excel
-%%  ~~function to do ... ~~
 }
 \description{The package \code{RDCOMClient} is used to open an Excel workbook and return the content (value) of one (or several) given range(s)
 in a specified sheet. This is helpful, whenever pathologically scattered data on an Excel sheet, which can't simply be saved as CSV-file, has to be imported in R.\cr\cr
 \code{XLGetWorkbook()} does the same for all the sheets in an Excel workbook.
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
 XLGetRange(file = NULL, sheet = NULL, range = NULL, as.data.frame = TRUE,
@@ -23,20 +20,16 @@ XLGetWorkbook(file, compactareas = TRUE)
 XLCurrReg(cell)
 XLNamedReg(x)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{file}{the fully specified path and filename of the workbook. If it is left as \code{NULL}, the
   function will look for a running Excel-Application and use its current sheet. The parameter \code{sheet} will be
   ignored in this case.
-%%     ~~Describe \code{fn} here~~
 }
   \item{sheet}{the name of the sheet containing the range(s) of interest.
-%%     ~~Describe \code{sheet} here~~
 }
   \item{range}{a scalar or a vector with the address(es) of the range(s) to be returned (characters).
   Use "A1"-address mode to specify the ranges, for example \code{"A1:F10"}. \cr If set to \code{NULL} (which is the default), the function will look for a selection that contains more than one cell. If
   found, the function will use this selection. If there is no selection then the current region of the selected cell will be used. Use \code{XLCurrReg()} if the current region of a cell, which is currently not selected, should be used. Range names can be provided with \code{XLNamedReg("name")}.
-%%     ~~Describe \code{cellrange} here~~
 }
 \item{as.data.frame}{logical. Determines if the cellranges should be coerced into data.frames. Defaults to \code{TRUE},
 as this is probably the common use of this function.}
@@ -83,13 +76,10 @@ If set to \code{FALSE} a list of the cell values in the specified Excel range, r
 }
 \author{
 Andri Signorell <andri@signorell.net>
-%%  ~~who you are~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{\code{\link{GetNewXL}}, \code{\link{GetCurrXL}}, \code{\link{XLView}}
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 \dontrun{ # Windows-specific example
@@ -116,7 +106,5 @@ as.data.frame(do.call(rbind, lst), stringsAsFactors = FALSE)
 }
 }
 
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ manip }
 \concept{MS-Office}

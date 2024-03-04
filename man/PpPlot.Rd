@@ -6,7 +6,6 @@
 \alias{GetCurrPP}
 
 
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Add Slides, Insert Texts and Plots to PowerPoint
 }
 \description{A couple of functions to get R-stuff into MS-Powerpoint.
@@ -36,13 +35,10 @@ PpText(txt, x = 1, y = 1, height = 50, width = 100, fontname = "Calibri", fontsi
        hasFrame = TRUE, pp = getOption("lastPP", default = GetNewPP()))
 
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{visible}{logical, should PowerPoint made visible by \code{GetNewPP()}? Defaults to TRUE.
-%%     ~~Describe \code{visible} here~~
 }
   \item{template}{the name of the template to be used for the new presentation.
-%%     ~~Describe \code{template} here~~
 }
 
   \item{pos}{position of the new inserted slide within the presentation.}
@@ -69,7 +65,6 @@ PpText(txt, x = 1, y = 1, height = 50, width = 100, fontname = "Calibri", fontsi
 
     }
 \details{See PowerPoint-objectmodel for further informations.
-%%  ~~ If necessary, more details than the description above ~~
 }
 \value{The functions return the pointer to the created object.
 }
@@ -79,7 +74,6 @@ Andri Signorell <andri@signorell.net>
 
 
 \seealso{\code{\link{WrdPlot}}
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 \dontrun{# Windows-specific example
@@ -124,7 +118,5 @@ for(i in 1:4){
 }
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ print }
 \concept{MS-Office}

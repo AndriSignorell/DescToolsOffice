@@ -10,12 +10,9 @@
 \alias{ToWrd.default}
 \alias{ToWrd.data.frame}
 
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Send Objects to Word
-%%  ~~function to do ... ~~
 }
 \description{Send objects like tables, ftables, lm tables, TOnes or just simple texts to a MS-Word document.
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
 ToWrd(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
@@ -47,22 +44,17 @@ ToWrd(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
 \method{ToWrd}{default}(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
 
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{the object to be transferred to Word.
-%%     ~~Describe \code{x} here~~
 }
   \item{font}{the font to be used to the output. This should be defined as a list containing fontname, fontsize, bold and italic flags:\cr \code{list(name="Arial", size=10, bold=FALSE, italic=TRUE)}.
-%%     ~~Describe \code{font} here~~
 }
 \item{para}{list containing paragraph format properties to be applied to the inserted text. For right align the paragraph one can set: \cr
 \code{list(alignment="r", LineBefore=0.5)}. See details for the full set of properties.}
 
   \item{main}{a caption for a table. This will be inserted by \code{\link{WrdCaption}} in Word and can be listed afterwards in a specific index. Default is \code{NULL}, which will insert nothing. Ignored if \code{x} is not a table.
-%%     ~~Describe \code{main} here~~
 }
   \item{align}{character vector giving the alignment of the table columns. \code{"l"} means left, \code{"r"} right and \code{"c"} center alignement. The code will be recyled to the length of thenumber of columns.
-%%     ~~Describe \code{align} here~~
 }
  \item{method}{string specifying how the \code{"ftable"} object is formatted
      (and printed if used as in \code{write.ftable()} or the \code{print}
@@ -81,44 +73,31 @@ ToWrd(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
    }
 
   \item{autofit}{logical, defining if the columns of table should be fitted to the length of their content.
-%%     ~~Describe \code{autofit} here~~
 }
   \item{row.names}{logical, defining whether the row.names should be included in the output. Default is \code{FALSE}.
-%%     ~~Describe \code{row.names} here~~
 }
  \item{col.names}{logical, defining whether the col.names should be included in the output. Default is \code{TRUE}.
-%%     ~~Describe \code{row.names} here~~
 }
  \item{tablestyle}{either the name of a defined Word tablestyle or its index.
-%%     ~~Describe \code{row.names} here~~
 }
 
 \item{style}{character, name of a style to be applied to the inserted text.}
   \item{\dots}{further arguments to be passed to or from methods.
-%%     ~~Describe \code{\dots} here~~
 }
 \item{bullet}{logical, defines if the text should be formatted as bullet points.}
 \item{split}{character vector (or object which can be coerced to such) containing regular expression(s) (unless \code{fixed = TRUE}) to use for splitting. If empty matches occur, in particular if \code{split} has length 0, x is split into single characters. If \code{split} has length greater than 1, it is re-cycled along x.}
 \item{fixed}{logical. If TRUE match split exactly, otherwise use regular expressions. Has priority over perl.}
   \item{digits}{integer, the desired (fixed) number of digits after the decimal point. Unlike \code{\link{formatC}} you will always get this number of digits even if the last digit is 0.
-%%     ~~Describe \code{digits} here~~
 }
   \item{na.form}{character, string specifying how \code{NA}s should be specially formatted.
   If set to \code{NULL} (default) no special action will be taken.
-%%     ~~Describe \code{pad} here~~
 }
 \item{wrd}{the pointer to a word instance. Can be a new one, created by \code{GetNewWrd()}
   or an existing one, created by \code{GetCurrWrd()}.
   Default is the last created pointer stored in \code{DescToolsOfficeOptions("lastWord")}.
-%%     ~~Describe \code{wrd} here~~
 }
 }
 \value{if \code{x} is a table a pointer to the table will be returned
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
 }
 \details{The paragraph format can be defined by means of these properties:
 
@@ -128,13 +107,10 @@ ToWrd(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
 \code{LineUnitBefore}, \code{LineUnitAfter}, \code{MirrorIndents}.
 }
 \author{Andri Signorell <andri@signorell.net>
-%%  ~~who you are~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{\code{\link{GetNewWrd}}
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 \dontrun{
@@ -201,7 +177,4 @@ ToWrd(tm, split="|", align=StrSplit("lrclrcl"))
 )
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ print }
-% use one of  RShowDoc("KEYWORDS")

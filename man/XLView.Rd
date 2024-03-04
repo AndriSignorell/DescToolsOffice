@@ -6,14 +6,11 @@
 \alias{ToXL.matrix}
 \alias{ToXL.default}
 
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Use MS-Excel as Viewer for a Data.Frame
-%%  ~~function to do ... ~~
 }
 \description{
 \code{XLView} can be used to view and edit a data.frame directly in MS-Excel, resp. to create a new data.frame in MS-Excel.
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
 }
 \usage{
 XLView(x, col.names = TRUE, row.names = FALSE, na = "", 
@@ -26,10 +23,8 @@ ToXL(x, at, ..., xl=DescToolsOfficeOptions("lastXL"))
 
 XLKill()
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{ is a data.frame to be transferred to MS-Excel. If data is missing a new file will be created.
-%%     ~~Describe \code{data} here~~
 }
   \item{row.names}{ either a logical value indicating whether the row names of x are to be written along with x, or
   a character vector of row names to be written.}
@@ -71,7 +66,6 @@ Andri Signorell <andri@signorell.net>, \code{ToXL()} is based on code of Duncan 
 
 
 \seealso{\code{\link{GetNewXL}}, \code{\link{XLGetRange}}, \code{\link{XLGetWorkbook}}
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 \dontrun{
@@ -126,8 +120,6 @@ sheet <- xl$Sheets()$Add()
 sheet[["name"]] <- "whisky"
 ToXL(d.whisky[1:10, 1:10], xl$Cells(1,1))}
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ manip }
 
 \concept{MS-Office}
