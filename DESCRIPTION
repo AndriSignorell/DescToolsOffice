@@ -1,7 +1,7 @@
 Package: DescToolsOffice
 Type: Package
 Title: Tools for Descriptive Statistics
-Version: 0.1.4
+Version: 0.1.5
 Date: 2024-03-05
 Authors@R: c(
   person("Andri", "Signorell", email = "andri@signorell.net", role = c("aut", "cre")),

@@ -8,16 +8,15 @@ IsValidHwnd(hwnd)
 }
 \arguments{
 \item{hwnd}{the pointer to an application instance as created by
-\code{GetCOMAppHandle()}.
-Default is the last created pointer stored in DescToolsOptions("lastWord").}
+\code{GetCOMAppHandle()}.}
 }
 \value{
-logical value, \code{TRUE} if hwnd is a valid pointer to a running
+logical value, \code{TRUE} if \code{hwnd} is a valid pointer to a running
 application
 }
 \description{
 Check if a pointer points to a valid and running MS-Office instance. The
-function does this by first checking for \code{NULL} and \code{nil} pointer
+function does this by first checking for \code{NULL} pointer
 and then trying to get the current selection of the application.
 }
 \note{

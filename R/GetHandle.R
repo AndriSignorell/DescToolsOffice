@@ -3,24 +3,28 @@
 #' Get a Handle to COM Application
 #' 
 #' To be able to control COM applications we need a so called handle,
-#' a kind of address, to it. 
+#' a kind of address, to it. This handle can be grabbed with the underlying functions
+#' from the package \code{RDCOMClient}.
 #' 
 #' The function \code{GetCOMAppHandle()} is the workhorse for 
 #' launching a new instance of the required application and return its handle.
 #' It checks if the RDCOMClient package is available and tries to start the
-#' application. If this is successful the handle is stored as option 
+#' application. If this is successful the handle is stored as option with the given name
+#' and returned as result.
+#'  
 #' 
 #' @aliases GetCOMAppHandle createCOMReference
 
 #' @param ref	the S object that is an external pointer containing the reference to the COM object.
-#' @param className	The name of the class that is “suggested” by the caller.
+#' @param className	the name of the class that is “suggested” by the caller.
 
-#' @param app name of the application as required by COM. This can e.g. be "Word.Application" 
-#' for MS-Word.
+#' @param app name of the application as required by COM. This is typically the name of 
+#' the program extended by \code{".Application"}, e.g. for MS-Word it would be 
+#' \code{"Word.Application"}. 
 #' @param option logical, should the handle be stored as an option? 
-#' If this is left to \code{NULL} no option will be stored, if a text is provided, the
+#' If this is left to \code{NULL} nothing will be stored, if a text is provided, the
 #' handle will be stored under this name.
-#' @param existing logical, should the handle to an existing instance be returned? 
+#' @param existing logical, should the handle to an already existing instance be returned? 
 #' Defaults to \code{FALSE}.
 #' @param visible logical, should the application made visible? Defaults to \code{TRUE}.
 
@@ -29,17 +33,21 @@
 
 #' @author Andri Signorell <andri@@signorell.net>
 
-#' @seealso \code{\link{GetHwnd}}, \code{\link{IsValidHwnd}}
+#' @seealso \code{\link{GetHwnd}}, \code{\link{GetCurrWrd}}, \code{\link{GetCurrXL}}, 
+#' \code{\link{GetCurrPP}}, \code{\link{IsValidHwnd}}
 #' 
 #' @keywords misc
 #' @examples
 #' 
 #' \dontrun{# Windows-specific example
 #' 
-#' # Start a new instance of an application
+#' # Start a new instance of an application and store the handle as option "lastWord"
 #' hwnd <- GetCOMAppHandle("Word.Application", option = "lastWord", 
 #'                          existing = FALSE, visible = TRUE)
+#' getOption("lastWord")
 #' 
+#' # close the application
+#' hwnd$quit()
 #' }
 
 #' @export createCOMReference
@@ -56,23 +64,24 @@ GetCOMAppHandle <- function(app, option=NULL, existing=FALSE, visible=TRUE){
     
     if(!existing)
       # there's no "get"-function in RDCOMClient, so just create a new here..
-      hwnd <- RDCOMClient::COMCreate(app, existing=existing)
+      hwnd <- RDCOMClient::COMCreate(app, force=TRUE, existing=FALSE)
     else
-      hwnd <- RDCOMClient::getCOMInstance(app)
+      hwnd <- RDCOMClient::getCOMInstance(app, force=FALSE, silent=TRUE)
     
-    if(is.null(hwnd)) 
-      warning(gettext("No running %s application found!", app))
+    if(!(!is.null(hwnd) && !is.character(hwnd))){
+      warning(gettextf("No running %s application found!", app))
+      return(hwnd)
+    } 
     
     else
       if(visible) 
         hwnd[["Visible"]] <- visible
       
       
-      # set the DescTools option, if required
-      if(!is.null(option))
+    # store the handle as option, if required
+    if(!is.null(option))
         eval(parse(text=gettextf("options(%s = hwnd)", option)))
-      # eval(parse(text=gettextf("DescToolsOfficeOptions(%s = hwnd)", option)))
-      
+
   } else {
     
     # no RDCOMClient present or not Windows system
@@ -95,7 +104,7 @@ GetCOMAppHandle <- function(app, option=NULL, existing=FALSE, visible=TRUE){
 #' Check Windows Pointer
 #' 
 #' Check if a pointer points to a valid and running MS-Office instance. The
-#' function does this by first checking for \code{NULL} and \code{nil} pointer
+#' function does this by first checking for \code{NULL} pointer
 #' and then trying to get the current selection of the application.
 #' 
 #' @note When closing an application instance, the value of the pointer in R is
@@ -108,9 +117,8 @@ GetCOMAppHandle <- function(app, option=NULL, existing=FALSE, visible=TRUE){
 #' 
 #' @param hwnd the pointer to an application instance as created by 
 #' \code{GetCOMAppHandle()}. 
-#' Default is the last created pointer stored in DescToolsOptions("lastWord").
 
-#' @return logical value, \code{TRUE} if hwnd is a valid pointer to a running
+#' @return logical value, \code{TRUE} if \code{hwnd} is a valid pointer to a running
 #' application
 
 #' @author Andri Signorell <andri@@signorell.net>
@@ -148,7 +156,9 @@ IsValidHwnd <- function(hwnd){
 #' Unfortunately it is not possible to choose a specific handle if there are 
 #' several instances already running. The underlying RDCOM function yields 
 #' some kind of "latest" launched instance. So in most cases you will be 
-#' safer to start a new instance.
+#' safer to start a new instance to be sure that you're communicating
+#' with the expected instance. If there's no running instance the error 
+#' message will be returned with a warning. 
 #' 
 #' @aliases GetNewWrd GetNewXL GetNewPP 
 #'          GetCurrWrd GetCurrXL GetCurrPP GetHwnd
@@ -226,7 +236,7 @@ GetNewWrd <- function (visible = TRUE, newdoc = TRUE, template = "Normal") {
       hwnd[["Documents"]]$Add(template, FALSE, 0)
   
   # return the handle invisibly
-  invisible(hwnd)
+  return(hwnd)
   
 }
 
@@ -247,7 +257,7 @@ GetNewXL <- function(visible = TRUE, newdoc = TRUE) {
     
   }
   
-  invisible(hwnd)
+  return(hwnd)
   
 }
 
@@ -266,7 +276,7 @@ GetNewPP <- function (visible = TRUE) {
     
   }
   
-  invisible(hwnd)  
+  return(hwnd)  
   
 }
 
@@ -275,27 +285,21 @@ GetNewPP <- function (visible = TRUE) {
 #' @rdname GetHandle
 #' @export GetCurrWrd
 GetCurrWrd <- function() {
-  hwnd <- GetCOMAppHandle("Word.Application", option="lastWord", existing=TRUE)
+  GetCOMAppHandle("Word.Application", option="lastWord", existing=TRUE)
 }
 
 
 #' @rdname GetHandle
 #' @export GetCurrXL
 GetCurrXL <- function() {
-  
-  hwnd <- GetCOMAppHandle("Excel.Application", option="lastXL", existing=TRUE)
-  invisible(hwnd)
+  GetCOMAppHandle("Excel.Application", option="lastXL", existing=TRUE)
 }
 
 
 #' @rdname GetHandle
 #' @export GetCurrPP
 GetCurrPP <- function() {
-  
-  hwnd <- GetCOMAppHandle("PowerPoint.Application", option="lastPP", existing=TRUE)
-  
-  invisible(hwnd)
-  
+  GetCOMAppHandle("PowerPoint.Application", option="lastPP", existing=TRUE)
 }
 
 
@@ -303,7 +307,7 @@ GetCurrPP <- function() {
 
 #' End Application Task
 #' 
-#' \code{WrdKill} and \code{XLKill} will shut down a running application instance 
+#' \code{WrdKill()} and \code{XLKill()} will shut down a running application instance 
 #' (which also might be invisible).
 #' Background is the fact, that the simple quit() command not always
 #' terminates a running XL task, and only sets it invisible (which can be 
@@ -320,13 +324,12 @@ GetCurrPP <- function() {
 
 #' @keywords misc
 #' @examples
-#' 
 #' \dontrun{ # Windows-specific example
 #' # get a handle to a new Word instance
 #' wrd <- GetNewWrd()
 #' # end it with the crowbar 
 #' WrdKill()
-
+#' 
 #' # get a handle to a new Excel instance
 #' xl <- GetNewXL()
 #' # end it with the crowbar 

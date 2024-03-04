@@ -48,7 +48,9 @@ look for a running instance of the specific application and return its handle.
 Unfortunately it is not possible to choose a specific handle if there are
 several instances already running. The underlying RDCOM function yields
 some kind of "latest" launched instance. So in most cases you will be
-safer to start a new instance.
+safer to start a new instance to be sure that you're communicating
+with the expected instance. If there's no running instance the error
+message will be returned with a warning.
 }
 \note{
 When closing an application instance, the value of the pointer in R is

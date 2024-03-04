@@ -12,16 +12,17 @@ GetCOMAppHandle(app, option = NULL, existing = FALSE, visible = TRUE)
 \arguments{
 \item{ref}{the S object that is an external pointer containing the reference to the COM object.}
 
-\item{className}{The name of the class that is “suggested” by the caller.}
+\item{className}{the name of the class that is “suggested” by the caller.}
 
-\item{app}{name of the application as required by COM. This can e.g. be "Word.Application"
-for MS-Word.}
+\item{app}{name of the application as required by COM. This is typically the name of
+the program extended by \code{".Application"}, e.g. for MS-Word it would be
+\code{"Word.Application"}.}
 
 \item{option}{logical, should the handle be stored as an option?
-If this is left to \code{NULL} no option will be stored, if a text is provided, the
+If this is left to \code{NULL} nothing will be stored, if a text is provided, the
 handle will be stored under this name.}
 
-\item{existing}{logical, should the handle to an existing instance be returned?
+\item{existing}{logical, should the handle to an already existing instance be returned?
 Defaults to \code{FALSE}.}
 
 \item{visible}{logical, should the application made visible? Defaults to \code{TRUE}.}
@@ -32,26 +33,32 @@ COM instance.
 }
 \description{
 To be able to control COM applications we need a so called handle,
-a kind of address, to it.
+a kind of address, to it. This handle can be grabbed with the underlying functions
+from the package \code{RDCOMClient}.
 }
 \details{
 The function \code{GetCOMAppHandle()} is the workhorse for
 launching a new instance of the required application and return its handle.
 It checks if the RDCOMClient package is available and tries to start the
-application. If this is successful the handle is stored as option
+application. If this is successful the handle is stored as option with the given name
+and returned as result.
 }
 \examples{
 
 \dontrun{# Windows-specific example
 
-# Start a new instance of an application
+# Start a new instance of an application and store the handle as option "lastWord"
 hwnd <- GetCOMAppHandle("Word.Application", option = "lastWord", 
                          existing = FALSE, visible = TRUE)
+getOption("lastWord")
 
+# close the application
+hwnd$quit()
 }
 }
 \seealso{
-\code{\link{GetHwnd}}, \code{\link{IsValidHwnd}}
+\code{\link{GetHwnd}}, \code{\link{GetCurrWrd}}, \code{\link{GetCurrXL}},
+\code{\link{GetCurrPP}}, \code{\link{IsValidHwnd}}
 }
 \author{
 Andri Signorell \href{mailto:andri@signorell.net}{andri@signorell.net}
