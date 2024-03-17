@@ -8,8 +8,8 @@ ToWrdB(
   x,
   font = NULL,
   ...,
-  wrd = DescToolsOfficeOptions("lastWord"),
-  bookmark = gettextf("bmt\%s", round(runif(1, min = 0.1) * 1e+09))
+  wrd = DescToolsOptions("lastWord"),
+  bookmark = NULL
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ list containing fontname, fontsize, bold and italic flags:\cr
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 
 \item{bookmark}{the name of the bookmark.}
 }

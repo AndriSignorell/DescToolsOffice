@@ -10,7 +10,7 @@ WrdTable(
   heights = NULL,
   widths = NULL,
   main = NULL,
-  wrd = DescToolsOfficeOptions("lastWord")
+  wrd = DescToolsOptions("lastWord")
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ Word. Default is NULL, which will insert nothing.}
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 }
 \value{
 A pointer to the inserted table.

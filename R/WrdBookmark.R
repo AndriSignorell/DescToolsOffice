@@ -15,7 +15,7 @@
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @param what a word constant, defining the type of object to be used to place
 #' the cursor.
 
@@ -50,7 +50,7 @@
 #' @export WrdBookmark
 
 
-WrdBookmark <- function(name, wrd = DescToolsOfficeOptions("lastWord")){
+WrdBookmark <- function(name, wrd = DescToolsOptions("lastWord")){
   
   wbms <- wrd[["ActiveDocument"]][["Bookmarks"]]
   
@@ -81,7 +81,7 @@ WrdBookmark <- function(name, wrd = DescToolsOfficeOptions("lastWord")){
 #' @rdname WrdBookmark
 #' @export WrdGoto
 WrdGoto <- function (name, what = wdConst$wdGoToBookmark, 
-                     wrd = DescToolsOfficeOptions("lastWord")) {
+                     wrd = DescToolsOptions("lastWord")) {
   
   wrdSel <- wrd[["Selection"]]
   
@@ -120,7 +120,7 @@ WrdGoto <- function (name, what = wdConst$wdGoToBookmark,
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 
 #' @author Andri Signorell <andri@@signorell.net>
 
@@ -152,7 +152,7 @@ WrdGoto <- function (name, what = wdConst$wdGoToBookmark,
 
 
 #' @export WrdInsertBookmark
-WrdInsertBookmark <- function (name, wrd = DescToolsOfficeOptions("lastWord")) {
+WrdInsertBookmark <- function (name, wrd = DescToolsOptions("lastWord")) {
   
   #   With ActiveDocument.Bookmarks
   #   .Add Range:=Selection.Range, Name:="entb"
@@ -168,7 +168,7 @@ WrdInsertBookmark <- function (name, wrd = DescToolsOfficeOptions("lastWord")) {
 
 #' @rdname WrdInsertBookmark
 #' @export WrdDeleteBookmark
-WrdDeleteBookmark <- function(name, wrd = DescToolsOfficeOptions("lastWord")){
+WrdDeleteBookmark <- function(name, wrd = DescToolsOptions("lastWord")){
   
   wrdBookmarks <- wrd[["ActiveDocument"]][["Bookmarks"]]
   if(wrdBookmarks$exists(name)){
@@ -203,7 +203,7 @@ WrdDeleteBookmark <- function(name, wrd = DescToolsOfficeOptions("lastWord")){
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{WrdFont}}, \code{\link{WrdPlot}},
 #' \code{\link{GetNewWrd}}, \code{\link{GetCurrWrd}}
@@ -231,7 +231,7 @@ WrdDeleteBookmark <- function(name, wrd = DescToolsOfficeOptions("lastWord")){
 #' @export WrdUpdateBookmark
 
 WrdUpdateBookmark <- function (name, text, what = wdConst$wdGoToBookmark, 
-                               wrd = DescToolsOfficeOptions("lastWord")) {
+                               wrd = DescToolsOptions("lastWord")) {
   
   #   With ActiveDocument.Bookmarks
   #   .Add Range:=Selection.Range, Name:="entb"

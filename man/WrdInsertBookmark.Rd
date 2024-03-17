@@ -7,9 +7,9 @@
 \code{WrdInsertBookmark}, \code{WrdDeleteBookmark} inserts/deletes
 a bookmark in a Word document.}
 \usage{
-WrdInsertBookmark(name, wrd = DescToolsOfficeOptions("lastWord"))
+WrdInsertBookmark(name, wrd = DescToolsOptions("lastWord"))
 
-WrdDeleteBookmark(name, wrd = DescToolsOfficeOptions("lastWord"))
+WrdDeleteBookmark(name, wrd = DescToolsOptions("lastWord"))
 }
 \arguments{
 \item{name}{the name of the bookmark.}
@@ -17,7 +17,7 @@ WrdDeleteBookmark(name, wrd = DescToolsOfficeOptions("lastWord"))
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 }
 \description{
 Insert New/Delete MS-Word Bookmark

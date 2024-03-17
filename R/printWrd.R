@@ -120,7 +120,7 @@ printWrd <- function(x, main = NULL, plotit = NULL, ..., wrd = wrd) {
   # start main proc  ****************
   
   # get fixed font
-  fixedfont <- getOption("fixedfont", list(name = "Consolas", size = 7))
+  fixedfont <- DescToolsOptions("fixedfont", list(name = "Consolas", size = 7))
   
   for (i in seq_along(x)) {
     # # skip object header entries

@@ -1,17 +1,22 @@
 
 export(
+"createCOMReference","GetCOMAppHandle","WrdKill","XLKill",
+"GetNewPP","GetNewWrd","GetNewXL","GetCurrPP","GetCurrWrd","GetCurrXL",
 
-"GetCurrPP","GetCurrWrd","GetCurrXL","GetNewPP","GetNewWrd","GetNewXL",
-"ToWrd",
-"WrdCaption","WrdGoto","WrdPageBreak",
-"WrdInsertBookmark","WrdTable","WrdKill","WrdPlot","WrdSaveAs",
-"WrdUpdateBookmark","WrdDeleteBookmark",
-"XLGetRange","XLGetWorkbook","XLKill","XLView","ToXL","XLDateToPOSIXct",
-"WrdParagraphFormat", "WrdParagraphFormat<-", "WrdFont", "WrdFont<-","WrdStyle", 
-"WrdStyle<-", "WrdTableBorders",
-"WrdCellRange", "WrdMergeCells", "WrdFormatCells",
-"createCOMReference","XLSaveAs",
-"SendOutlookMail","ToWrdB", "ToWrdPlot", "WrdBookmark","WrdOpenFile"
+"WrdOpenFile","WrdSaveAs",
+"ToWrd","ToWrdB","ToWrdPlot", 
+"WrdBookmark","WrdInsertBookmark","WrdDeleteBookmark","WrdUpdateBookmark",
+"WrdGoto",
+"WrdCaption","WrdPageBreak",
+"WrdParagraphFormat", "WrdParagraphFormat<-", 
+"WrdFont", "WrdFont<-","WrdStyle", "WrdStyle<-", 
+"WrdTable","WrdTableBorders","WrdCellRange","WrdMergeCells","WrdFormatCells",
+"WrdPlot",
+
+"XLGetRange","XLGetWorkbook","XLView","ToXL","XLDateToPOSIXct",
+"XLSaveAs",
+
+"SendOutlookMail"
 )
 
 

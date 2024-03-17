@@ -4,13 +4,13 @@
 \alias{WrdPageBreak}
 \title{Insert a Page Break}
 \usage{
-WrdPageBreak(wrd = DescToolsOfficeOptions("lastWord"))
+WrdPageBreak(wrd = DescToolsOptions("lastWord"))
 }
 \arguments{
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 }
 \description{
 Insert a page break in a MS-Word (R) document at the position of the cursor.

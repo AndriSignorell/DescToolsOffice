@@ -4,7 +4,7 @@
 \alias{WrdCaption}
 \title{Insert Caption to Word}
 \usage{
-WrdCaption(x, index = 1, wrd = DescToolsOfficeOptions("lastWord"))
+WrdCaption(x, index = 1, wrd = DescToolsOptions("lastWord"))
 }
 \arguments{
 \item{x}{the text of the caption.}
@@ -14,7 +14,7 @@ WrdCaption(x, index = 1, wrd = DescToolsOfficeOptions("lastWord"))
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 }
 \description{
 Insert a caption in a given level to a Word document. The caption is

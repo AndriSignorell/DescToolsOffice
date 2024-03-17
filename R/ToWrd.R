@@ -73,7 +73,7 @@
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @return if \code{x} is a table a pointer to the table will be returned
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{GetNewWrd}}
@@ -145,7 +145,7 @@
 #' }
 #' 
 #' @export ToWrd
-ToWrd <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
+ToWrd <- function(x, font=NULL, ..., wrd=DescToolsOptions("lastWord")){
   UseMethod("ToWrd")
 }
 
@@ -174,8 +174,6 @@ ToWrd <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
 
 
 
-
-
 #' Send Objects to Word and Bookmark Them
 #' 
 #' Send objects like tables, ftables, lm tables, TOnes or just simple texts to
@@ -195,7 +193,7 @@ ToWrd <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @param bookmark the name of the bookmark.
 #' @return a handle to the set bookmark
 #' @author Andri Signorell <andri@@signorell.net>
@@ -217,180 +215,49 @@ ToWrd <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
 #' }
 #' 
 #' @export ToWrdB
-ToWrdB <- function(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"), 
-                   bookmark=gettextf("bmt%s", round(runif(1, min=0.1)*1e9))){
+ToWrdB <- function(x, font = NULL, ..., wrd = DescToolsOptions("lastWord"), 
+                   bookmark=NULL){
   
-  # Sends the output of an object x to word and places a bookmark bm on it
-  
-  # place the temporary bookmark on cursor
-  bm_start <- WrdInsertBookmark(.randbm())
-  
-  # send stuff to Word (it's generic ...)
-  ToWrd(x, font=font, ..., wrd=wrd)
-  
-  # place end bookmark
-  bm_end <- WrdInsertBookmark(.randbm())
-  
-  # select all the inserted text between the two bookmarks
-  wrd[["ActiveDocument"]]$Range(bm_start$range()$start(), bm_end$range()$end())$select()
-  
-  # place the required bookmark over the whole inserted story
-  res <- WrdInsertBookmark(bookmark)
-  
-  # collapse selection to the end position
-  wrd$selection()$collapse(wdConst$wdCollapseEnd)
-  
-  # delete the two temporary bookmarks start/end
-  bm_start$delete()
-  bm_end$delete()
-  
-  # return the bookmark with inserted story
-  invisible(res)
-  
-}
+  if(is.null(bookmark))
+    ToWrd(x, font=font, ..., wrd=wrd)
 
-
-
-
-#' Send a Plot to Word and Bookmark it
-#' 
-#' Evaluate given plot code to a \code{\link{tiff}()} device and imports the
-#' created plot in the currently open MS-Word document. The imported plot is
-#' marked with a bookmark that can later be used for a potential update
-#' (provided the bookmark name has been stored).
-#' 
-#' An old and persistent problem that has existed for a long time is that as
-#' results once were loaded into a Word document the connection broke so that
-#' no update was possible. It was only recently that I realized that bookmarks
-#' in Word could be a solution for this. The present function evaluates some
-#' given plot code chunk using a tiff device and imports the created plot in a
-#' word document. The imported plot is given a bookmark, that can be used
-#' afterwards for changing or updating the plot.
-#' 
-#' This function is designed for use with the \bold{DescToolsAddIns} functions
-#' \code{ToWrdPlotWithBookmark()} and \code{ToWrdWithBookmark()} allowing to
-#' assign keyboard shortcuts. The two functions will also insert the newly
-#' defined bookmark in the source file in a format, which can be interpreted by
-#' the function \code{UpdateBookmark()}.
-#' 
-#' @param plotcode code chunk needed for producing the plot
-#' @param bookmark character, the name of the bookmark
-#' @param width the width in cm of the plot in the Word document (default 15)
-#' @param height the height in cm of the plot in the Word document (default
-#' 9.3)
-#' @param scale the scale of the plot (default 100)
-#' @param pointsize the default pointsize of plotted text, interpreted as big
-#' points (1/72 inch) at \code{res} ppi. (default is 12)
-#' @param res the resolution for the graphic (default 300)
-#' @param crop a vector of 4 elements, the crop factor for all 4 sides of a
-#' picture in cm (default all 0)
-#' @param title character, the title of the plot to be inserted in the word
-#' document
-#' @param wrd the pointer to a word instance. Can be a new one, created by
-#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
-#' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
-#' @return a list \item{plot_hwnd }{a windows handle to the inserted plot}
-#' \item{bookmark}{a windows handle to the bookmark}
-#' @author Andri Signorell <andri@@signorell.net>
-#' @seealso \code{\link{ToWrdB}}, \code{\link{WrdInsertBookmark}}
-#' @keywords print
-#' @examples
-#' 
-#' \dontrun{
-#' # we can't get this through the CRAN test - run it with copy/paste to console
-#' 
-#' wrd <- GetNewWrd()
-#' bm <- ToWrdB("This is text to be possibly replaced later.")
-#' 
-#' # get the automatically created name of the bookmark
-#' bm$name()
-#' 
-#' WrdGoto(bm$name())
-#' UpdateBookmark(...)
-#' }
-#' 
-#' @export ToWrdPlot
-ToWrdPlot <- function(plotcode,  
-                      width=NULL, height=NULL, scale=100, pointsize=12, res=300, crop=0, title=NULL, 
-                      wrd = DescToolsOfficeOptions("lastWord"), 
-                      bookmark=gettextf("bmp%s", round(runif(1, min=0.1)*1e9))
-){
-  
-  if(is.null(width)) width <- 15
-  if(is.null(height)) height <- width / gold_sec_c 
-  
-  crop <- rep(crop, length.out=4)
-  
-  if(is.null(bookmark)) bookmark <- .randbm()
-  
-  
-  # open device
-  tiff(filename = (fn <- paste(tempfile(), ".tif", sep = "")), 
-       width = width, height = height, units = "cm", pointsize = pointsize,
-       res = res, compression = "lzw")
-  
-  # do plot
-  if(!is.null(plotcode ))
-    eval(parse(text = plotcode))
-  
-  # close device
-  dev.off()
-  
-  
-  # import in word ***********
-  # place the temporary bookmark on cursor
-  bm_start <- WrdInsertBookmark(.randbm(), wrd=wrd)
-  
-  # send stuff to Word (it's generic ...)
-  hwnd <- wrd$selection()$InlineShapes()$AddPicture(FileName=fn, LinkToFile=FALSE, SaveWithDocument=TRUE)
-  hwnd[["LockAspectRatio"]] <- 1
-  hwnd[["ScaleWidth"]] <- hwnd[["ScaleHeight"]] <- scale
-  pic <- hwnd$PictureFormat()
-  pic[["CropBottom"]] <- CmToPts(crop[1])
-  pic[["CropLeft"]] <- CmToPts(crop[2])
-  pic[["CropTop"]] <- CmToPts(crop[3])
-  pic[["CropRight"]] <- CmToPts(crop[4])
-  
-  if(!is.null(title)){
-    hwnd$select()
-    wrd[["Selection"]]$InsertCaption(Label="Figure", Title=gettextf(" - %s", title), 
-                                     Position=wdConst$wdCaptionPositionBelow, ExcludeLabel=0)
-    wrd[["Selection"]]$MoveRight(wdConst$wdCharacter, 1, 0)
+  else {  
+    # Sends the output of an object x to word and places a bookmark bm on it
+    
+    # place the temporary bookmark on cursor
+    bm_start <- WrdInsertBookmark(.randbm())
+    
+    # send stuff to Word (it's generic ...)
+    ToWrd(x, font=font, ..., wrd=wrd)
+    
+    # place end bookmark
+    bm_end <- WrdInsertBookmark(.randbm())
+    
+    # select all the inserted text between the two bookmarks
+    wrd[["ActiveDocument"]]$Range(bm_start$range()$start(), bm_end$range()$end())$select()
+    
+    # place the required bookmark over the whole inserted story
+    res <- WrdInsertBookmark(bookmark)
+    
+    # collapse selection to the end position
+    wrd$selection()$collapse(wdConst$wdCollapseEnd)
+    
+    # delete the two temporary bookmarks start/end
+    bm_start$delete()
+    bm_end$delete()
+    
+    # return the bookmark with inserted story
+    invisible(res)
     
   }
   
-  
-  ToWrd(x="\n", wrd=wrd)
-  
-  # place end bookmark
-  bm_end <- WrdInsertBookmark(.randbm(), wrd=wrd)
-  
-  # select all the inserted text between the two bookmarks
-  wrd[["ActiveDocument"]]$Range(bm_start$range()$start(), bm_end$range()$end())$select()
-  
-  # place the required bookmark over the whole inserted story
-  res <- WrdInsertBookmark(bookmark, wrd=wrd)
-  
-  # collapse selection to the end position
-  wrd$selection()$collapse(wdConst$wdCollapseEnd)
-  
-  # delete the two temporary bookmarks start/end
-  bm_start$delete()
-  bm_end$delete()
-  
-  # return the bookmark with inserted story
-  invisible(list(plot_hwnd=hwnd, bookmark=res))
-  
 }
-
-
 
 
 
 
 #' @rdname ToWrd
-ToWrd.default <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
+ToWrd.default <- function(x, font=NULL, ..., wrd=DescToolsOptions("lastWord")){
   
   ToWrd.character(x=DescTools:::.CaptOut(x), font=font, ..., wrd=wrd)
   invisible()
@@ -399,7 +266,60 @@ ToWrd.default <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWor
 
 
 
-ToWrd.Desc <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
+#' @rdname ToWrd
+ToWrd.character <- function (x, font = NULL, para = NULL, style = NULL, 
+                             bullet=FALSE,  ..., 
+                             wrd = DescToolsOptions("lastWord")) {
+  
+  # we will convert UTF-8 strings to Latin-1, if the local info is Latin-1
+  if (any(l10n_info()[["Latin-1"]] & Encoding(x) == "UTF-8"))
+    x[Encoding(x) == "UTF-8"] <- iconv(x[Encoding(x) == "UTF-8"], from = "UTF-8", to = "latin1")
+  
+  # place the temporary bookmark on cursor
+  bm_start <- WrdInsertBookmark(.randbm())
+  
+  wrd[["Selection"]]$InsertAfter(paste(x, collapse = "\n"))
+  
+  # place end bookmark
+  bm_end <- WrdInsertBookmark(.randbm())
+  
+  # select all the inserted text between the two bookmarks
+  wrd[["ActiveDocument"]]$Range(bm_start$range()$start(), bm_end$range()$end())$select()
+  
+  # apply format to the whole inserted story
+  if (!is.null(style))
+    WrdStyle(wrd) <- style
+  
+  if (!is.null(para))
+    WrdParagraphFormat(wrd) <- para
+  
+  if(!is.null(font)){
+    
+    if(identical(font, "fix")){
+      font <- DescToolsOptions("fixedfont",
+                               default = structure(list(name="Courier New", size=8), 
+                                                   class="font"))
+    }
+    WrdFont(wrd) <- font
+  }
+  
+  if(bullet)
+    wrd[["Selection"]]$Range()$ListFormat()$ApplyBulletDefault()
+  
+  # collapse selection to the end position
+  wrd[["Selection"]]$Collapse(Direction=wdConst$wdCollapseEnd)
+  
+  # delete the two temporary bookmarks start/end
+  bm_start$delete()
+  bm_end$delete()
+
+  invisible()
+  
+}
+
+
+
+ToWrd.Desc <- function(x, font=NULL, ..., wrd=DescToolsOptions("lastWord")){
   
   printWrd(x, ..., wrd=wrd)
   invisible()
@@ -408,127 +328,18 @@ ToWrd.Desc <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")
 
 
 
-#' @rdname ToWrd
-ToWrd.TOne <- function(x, font=NULL, para=NULL, main=NULL, align=NULL,
-                       autofit=TRUE, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  
-  wTab <- ToWrd.table(x, main=NULL, font=font, align=align, autofit=autofit, wrd=wrd, ...)
-  
-  if(!is.null(para)){
-    wTab$Select()
-    WrdParagraphFormat(wrd) <- para
-    
-    # move out of table
-    wrd[["Selection"]]$EndOf(wdConst$wdTable)
-    wrd[["Selection"]]$MoveRight(wdConst$wdCharacter, 2, 0)
-  }
-  
-  if(is.null(font)) font <- list()
-  if(is.null(font$size))
-    font$size <- WrdFont(wrd)$size - 2
-  else
-    font$size <- font$size - 2
-  
-  wrd[["Selection"]]$TypeBackspace()
-  ToWrd.character(paste("\n", attr(x, "legend"), "\n\n", sep=""),
-                  font=font, wrd=wrd)
-  
-  
-  if(!is.null(main)){
-    sel <- wrd$Selection()  # "Abbildung"
-    sel$InsertCaption(Label=wdConst$wdCaptionTable, Title=paste(" - ", main, sep=""))
-    sel$TypeParagraph()
-    
-  }
-  
-  invisible(wTab)
-  
-}
-
-
-#' @rdname ToWrd
-ToWrd.abstract <- function(x, font=NULL, autofit=TRUE, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  
-  WrdCaption(x=attr(x, "main"), wrd=wrd)
-  
-  if(!is.null(attr(x, "label"))){
-    
-    if(is.null(font)){
-      lblfont <- list(fontsize=8)
-    } else {
-      lblfont <- font
-      lblfont$fontsize <- 8
-    }
-    
-    ToWrd.character(paste("\n", attr(x, "label"), "\n", sep=""),
-                    font = lblfont, wrd=wrd)
-  }
-  
-  ToWrd.character(gettextf("\ndata.frame:	%s obs. of  %s variables (complete cases: %s / %s)\n\n",
-                           attr(x, "nrow"), attr(x, "ncol"), attr(x, "complete"), 
-                           DescTools::Format(attr(x, "complete")/attr(x, "nrow"), fmt="%", digits=1))
-                  , font=font, wrd=wrd)
-  
-  wTab <- ToWrd.data.frame(x, wrd=wrd, autofit=autofit, font=font, align="l", ...)
-  
-  invisible(wTab)
-  
-}
 
 
 
-ToWrd.lm <- function(x, font=NULL, ..., wrd=DescToolsOfficeOptions("lastWord")){
-  
-  invisible()
-}
-
-
-
-#' @rdname ToWrd
-ToWrd.character <- function (x, font = NULL, para = NULL, style = NULL, bullet=FALSE,  ..., wrd = DescToolsOfficeOptions("lastWord")) {
-  
-  # we will convert UTF-8 strings to Latin-1, if the local info is Latin-1
-  if (any(l10n_info()[["Latin-1"]] & Encoding(x) == "UTF-8"))
-    x[Encoding(x) == "UTF-8"] <- iconv(x[Encoding(x) == "UTF-8"], from = "UTF-8", to = "latin1")
-  
-  wrd[["Selection"]]$InsertAfter(paste(x, collapse = "\n"))
-  
-  if (!is.null(style))
-    WrdStyle(wrd) <- style
-  
-  if (!is.null(para))
-    WrdParagraphFormat(wrd) <- para
-  
-  
-  if(identical(font, "fix")){
-    font <- DescToolsOfficeOptions("fixedfont")
-    if(is.null(font))
-      font <- structure(list(name="Courier New", size=8), class="font")
-  }
-  
-  if(!is.null(font)){
-    currfont <- WrdFont(wrd)
-    WrdFont(wrd) <- font
-    on.exit(WrdFont(wrd) <- currfont)
-  }
-  
-  if(bullet)
-    wrd[["Selection"]]$Range()$ListFormat()$ApplyBulletDefault()
-  
-  wrd[["Selection"]]$Collapse(Direction=wdConst$wdCollapseEnd)
-  
-  invisible()
-  
-}
-
-
-ToWrd.PercTable <- function(x, font=NULL, main = NULL, ..., wrd = DescToolsOfficeOptions("lastWord")){
+ToWrd.PercTable <- function(x, font=NULL, main = NULL, ..., 
+                            wrd = DescToolsOptions("lastWord")){
   ToWrd.ftable(x$ftab, font=font, main=main, ..., wrd=wrd)
 }
 
 
 
-ToWrd.data.frame <- function(x, font=NULL, main = NULL, row.names=NULL, ..., wrd = DescToolsOfficeOptions("lastWord")){
+ToWrd.data.frame <- function(x, font=NULL, main = NULL, row.names=NULL, ..., 
+                             wrd = DescToolsOptions("lastWord")){
   
   # drops dimension names!! don't use here
   # x <- apply(x, 2, as.character)
@@ -566,12 +377,14 @@ ToWrd.data.frame <- function(x, font=NULL, main = NULL, row.names=NULL, ..., wrd
 # }
 
 
-ToWrd.matrix <- function(x, font=NULL, main = NULL, ..., wrd = DescToolsOfficeOptions("lastWord")){
+ToWrd.matrix <- function(x, font=NULL, main = NULL, ..., 
+                         wrd = DescToolsOptions("lastWord")){
   ToWrd.table(x=x, font=font, main=main, ..., wrd=wrd)
 }
 
 
-ToWrd.Freq <- function(x, font=NULL, main = NULL, ..., wrd = DescToolsOfficeOptions("lastWord")){
+ToWrd.Freq <- function(x, font=NULL, main = NULL, ..., 
+                       wrd = DescToolsOptions("lastWord")){
   
   x[,c(3,5)] <- sapply(round(x[,c(3,5)], 3), Format, digits=3)
   
@@ -584,7 +397,9 @@ ToWrd.Freq <- function(x, font=NULL, main = NULL, ..., wrd = DescToolsOfficeOpti
 
 
 
-ToWrd.ftable <- function (x, font = NULL, main = NULL, align=NULL, method = "compact", ..., wrd = DescToolsOfficeOptions("lastWord")) {
+ToWrd.ftable <- function (x, font = NULL, main = NULL, align=NULL, 
+                          method = "compact", ..., 
+                          wrd = DescToolsOptions("lastWord")) {
   
   # simple version:
   #   x <- FixToTable(capture.output(x))
@@ -594,7 +409,7 @@ ToWrd.ftable <- function (x, font = NULL, main = NULL, align=NULL, method = "com
   # but we can't import a not exported function, so we provide an own copy of it
   
   # so this is a verbatim copy of it
-  .format.ftable <- function (x, quote = TRUE, digits = getOption("digits"), method = c("non.compact",
+  .format.ftable <- function (x, quote = TRUE, digits = DescToolsOptions("digits"), method = c("non.compact",
                                                                                         "row.compact", "col.compact", "compact"), lsep = " | ", ...)
   {
     if (!inherits(x, "ftable"))
@@ -684,25 +499,31 @@ ToWrd.ftable <- function (x, font = NULL, main = NULL, align=NULL, method = "com
 
 
 #' @rdname ToWrd
-ToWrd.table <- function (x, font = NULL, main = NULL, align=NULL, tablestyle=NULL, autofit = TRUE,
-                         row.names=TRUE, col.names=TRUE, ..., wrd = DescToolsOfficeOptions("lastWord")) {
+ToWrd.table <- function (x, font = NULL, main = NULL, align=NULL, 
+                         tablestyle=NULL, autofit = TRUE,
+                         row.names=TRUE, col.names=TRUE, ..., 
+                         wrd = DescToolsOptions("lastWord")) {
   
   
   x[] <- as.character(x)
-  if (any(l10n_info()[["Latin-1"]] & Encoding(x) == "UTF-8"))
-    x[Encoding(x) == "UTF-8"] <- iconv(x[Encoding(x) == "UTF-8"], from = "UTF-8", to = "latin1")
+  
+  # if (any(l10n_info()[["Latin-1"]] & Encoding(x) == "UTF-8"))
+  #   x[Encoding(x) == "UTF-8"] <- iconv(x[Encoding(x) == "UTF-8"], from = "UTF-8", to = "latin1")
   
   # add column names to character table
   if(col.names)
     x <- rbind(colnames(x), x)
+  
   if(row.names){
     rown <- rownames(x)
     # if(col.names)
     #   rown <- c("", rown)
     x <- cbind(rown, x)
   }
+  
   # replace potential \n in table with /cr, as convertToTable would make a new cell for them
   x <- gsub(pattern= "\n", replacement = "/cr", x = x)
+  
   # paste the cells and separate by \t
   txt <- paste(apply(x, 1, paste, collapse="\t"), collapse="\n")
   
@@ -807,7 +628,7 @@ ToWrd.table <- function (x, font = NULL, main = NULL, align=NULL, tablestyle=NUL
 
 
 ToWrd.TwoGroups <- function(x, font = NULL, ..., 
-                            wrd = DescToolsOfficeOptions("lastWord")) {
+                            wrd = DescToolsOptions("lastWord")) {
   
   if(!is.na(x$main))
     WrdCaption(x$main, wrd = wrd)
@@ -839,7 +660,7 @@ ToWrd.TwoGroups <- function(x, font = NULL, ...,
 ToWrd.TMod <- function (x, font = NULL, para = NULL, main = NULL, align = NULL, 
                         split=" ", fixed = TRUE, 
                         autofit = TRUE, digits = 3, na.form = "-", ..., 
-                        wrd = DescToolsOfficeOptions("lastWord")) {
+                        wrd = DescToolsOptions("lastWord")) {
   
   
   # prepare quality measures  
@@ -882,5 +703,218 @@ ToWrd.TMod <- function (x, font = NULL, para = NULL, main = NULL, align = NULL,
   
 }
 
+
+
+
+
+#' Send a Plot to Word and Bookmark it
+#' 
+#' Evaluate given plot code to a \code{\link{tiff}()} device and imports the
+#' created plot in the currently open MS-Word document. The imported plot is
+#' marked with a bookmark that can later be used for a potential update
+#' (provided the bookmark name has been stored).
+#' 
+#' An old and persistent problem that has existed for a long time is that as
+#' results once were loaded into a Word document the connection broke so that
+#' no update was possible. It was only recently that I realized that bookmarks
+#' in Word could be a solution for this. The present function evaluates some
+#' given plot code chunk using a tiff device and imports the created plot in a
+#' word document. The imported plot is given a bookmark, that can be used
+#' afterwards for changing or updating the plot.
+#' 
+#' This function is designed for use with the \bold{DescToolsAddIns} functions
+#' \code{ToWrdPlotWithBookmark()} and \code{ToWrdWithBookmark()} allowing to
+#' assign keyboard shortcuts. The two functions will also insert the newly
+#' defined bookmark in the source file in a format, which can be interpreted by
+#' the function \code{UpdateBookmark()}.
+#' 
+#' @param plotcode code chunk needed for producing the plot
+#' @param bookmark character, the name of the bookmark
+#' @param width the width in cm of the plot in the Word document (default 15)
+#' @param height the height in cm of the plot in the Word document (default
+#' 9.3)
+#' @param scale the scale of the plot (default 100)
+#' @param pointsize the default pointsize of plotted text, interpreted as big
+#' points (1/72 inch) at \code{res} ppi. (default is 12)
+#' @param res the resolution for the graphic (default 300)
+#' @param crop a vector of 4 elements, the crop factor for all 4 sides of a
+#' picture in cm (default all 0)
+#' @param title character, the title of the plot to be inserted in the word
+#' document
+#' @param wrd the pointer to a word instance. Can be a new one, created by
+#' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
+#' Default is the last created pointer stored in
+#' \code{DescToolsOptions("lastWord")}.
+#' @return a list \item{plot_hwnd }{a windows handle to the inserted plot}
+#' \item{bookmark}{a windows handle to the bookmark}
+#' @author Andri Signorell <andri@@signorell.net>
+#' @seealso \code{\link{ToWrdB}}, \code{\link{WrdInsertBookmark}}
+#' @keywords print
+#' @examples
+#' 
+#' \dontrun{
+#' # we can't get this through the CRAN test - run it with copy/paste to console
+#' 
+#' wrd <- GetNewWrd()
+#' bm <- ToWrdB("This is text to be possibly replaced later.")
+#' 
+#' # get the automatically created name of the bookmark
+#' bm$name()
+#' 
+#' WrdGoto(bm$name())
+#' UpdateBookmark(...)
+#' }
+#' 
+#' @export ToWrdPlot
+ToWrdPlot <- function(plotcode,  
+                      width=NULL, height=NULL, scale=100, pointsize=12, res=300, crop=0, title=NULL, 
+                      wrd = DescToolsOptions("lastWord"), 
+                      bookmark=gettextf("bmp%s", round(runif(1, min=0.1)*1e9))
+){
+  
+  if(is.null(width)) width <- 15
+  if(is.null(height)) height <- width / gold_sec_c 
+  
+  crop <- rep(crop, length.out=4)
+  
+  if(is.null(bookmark)) bookmark <- .randbm()
+  
+  
+  # open device
+  tiff(filename = (fn <- paste(tempfile(), ".tif", sep = "")), 
+       width = width, height = height, units = "cm", pointsize = pointsize,
+       res = res, compression = "lzw")
+  
+  # do plot
+  if(!is.null(plotcode ))
+    eval(parse(text = plotcode))
+  
+  # close device
+  dev.off()
+  
+  
+  # import in word ***********
+  # place the temporary bookmark on cursor
+  bm_start <- WrdInsertBookmark(.randbm(), wrd=wrd)
+  
+  # send stuff to Word (it's generic ...)
+  hwnd <- wrd$selection()$InlineShapes()$AddPicture(FileName=fn, LinkToFile=FALSE, SaveWithDocument=TRUE)
+  hwnd[["LockAspectRatio"]] <- 1
+  hwnd[["ScaleWidth"]] <- hwnd[["ScaleHeight"]] <- scale
+  pic <- hwnd$PictureFormat()
+  pic[["CropBottom"]] <- CmToPts(crop[1])
+  pic[["CropLeft"]] <- CmToPts(crop[2])
+  pic[["CropTop"]] <- CmToPts(crop[3])
+  pic[["CropRight"]] <- CmToPts(crop[4])
+  
+  if(!is.null(title)){
+    hwnd$select()
+    wrd[["Selection"]]$InsertCaption(Label="Figure", Title=gettextf(" - %s", title), 
+                                     Position=wdConst$wdCaptionPositionBelow, ExcludeLabel=0)
+    wrd[["Selection"]]$MoveRight(wdConst$wdCharacter, 1, 0)
+    
+  }
+  
+  
+  ToWrd(x="\n", wrd=wrd)
+  
+  # place end bookmark
+  bm_end <- WrdInsertBookmark(.randbm(), wrd=wrd)
+  
+  # select all the inserted text between the two bookmarks
+  wrd[["ActiveDocument"]]$Range(bm_start$range()$start(), bm_end$range()$end())$select()
+  
+  # place the required bookmark over the whole inserted story
+  res <- WrdInsertBookmark(bookmark, wrd=wrd)
+  
+  # collapse selection to the end position
+  wrd$selection()$collapse(wdConst$wdCollapseEnd)
+  
+  # delete the two temporary bookmarks start/end
+  bm_start$delete()
+  bm_end$delete()
+  
+  # return the bookmark with inserted story
+  invisible(list(plot_hwnd=hwnd, bookmark=res))
+  
+}
+
+
+
+#' @rdname ToWrd
+ToWrd.TOne <- function(x, font=NULL, para=NULL, main=NULL, align=NULL,
+                       autofit=TRUE, ..., wrd=DescToolsOptions("lastWord")){
+  
+  wTab <- ToWrd.table(x, main=NULL, font=font, align=align, autofit=autofit, wrd=wrd, ...)
+  
+  if(!is.null(para)){
+    wTab$Select()
+    WrdParagraphFormat(wrd) <- para
+    
+    # move out of table
+    wrd[["Selection"]]$EndOf(wdConst$wdTable)
+    wrd[["Selection"]]$MoveRight(wdConst$wdCharacter, 2, 0)
+  }
+  
+  if(is.null(font)) font <- list()
+  if(is.null(font$size))
+    font$size <- WrdFont(wrd)$size - 2
+  else
+    font$size <- font$size - 2
+  
+  wrd[["Selection"]]$TypeBackspace()
+  ToWrd.character(paste("\n", attr(x, "legend"), "\n\n", sep=""),
+                  font=font, wrd=wrd)
+  
+  
+  if(!is.null(main)){
+    sel <- wrd$Selection()  # "Abbildung"
+    sel$InsertCaption(Label=wdConst$wdCaptionTable, Title=paste(" - ", main, sep=""))
+    sel$TypeParagraph()
+    
+  }
+  
+  invisible(wTab)
+  
+}
+
+
+
+#' @rdname ToWrd
+ToWrd.abstract <- function(x, font=NULL, autofit=TRUE, ..., 
+                           wrd=DescToolsOptions("lastWord")){
+  
+  WrdCaption(x=attr(x, "main"), wrd=wrd)
+  
+  if(!is.null(attr(x, "label"))){
+    
+    if(is.null(font)){
+      lblfont <- list(fontsize=8)
+    } else {
+      lblfont <- font
+      lblfont$fontsize <- 8
+    }
+    
+    ToWrd.character(paste("\n", attr(x, "label"), "\n", sep=""),
+                    font = lblfont, wrd=wrd)
+  }
+  
+  ToWrd.character(gettextf("\ndata.frame:	%s obs. of  %s variables (complete cases: %s / %s)\n\n",
+                           attr(x, "nrow"), attr(x, "ncol"), attr(x, "complete"), 
+                           DescTools::Format(attr(x, "complete")/attr(x, "nrow"), fmt="%", digits=1))
+                  , font=font, wrd=wrd)
+  
+  wTab <- ToWrd.data.frame(x, wrd=wrd, autofit=autofit, font=font, align="l", ...)
+  
+  invisible(wTab)
+  
+}
+
+
+
+ToWrd.lm <- function(x, font=NULL, ..., wrd=DescToolsOptions("lastWord")){
+  
+  invisible()
+}
 
 

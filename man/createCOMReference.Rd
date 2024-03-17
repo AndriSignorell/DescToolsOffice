@@ -50,7 +50,7 @@ and returned as result.
 # Start a new instance of an application and store the handle as option "lastWord"
 hwnd <- GetCOMAppHandle("Word.Application", option = "lastWord", 
                          existing = FALSE, visible = TRUE)
-getOption("lastWord")
+DescToolsOptions("lastWord")
 
 # close the application
 hwnd$quit()

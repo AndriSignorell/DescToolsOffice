@@ -10,7 +10,7 @@ WrdUpdateBookmark(
   name,
   text,
   what = wdConst$wdGoToBookmark,
-  wrd = DescToolsOfficeOptions("lastWord")
+  wrd = DescToolsOptions("lastWord")
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ the cursor.}
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 }
 \description{
 Bookmarks are useful to build structured documents, which can be updated

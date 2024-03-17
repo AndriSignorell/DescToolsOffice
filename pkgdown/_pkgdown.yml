@@ -1,0 +1,81 @@
+destination: docs
+
+development:
+  mode: auto
+
+template:
+  default_assets: true
+  params:
+    bootswatch: spacelab
+
+navbar:
+  structure:
+    left:  [version, home, intro, reference, articles, tutorials, news]
+    right: [github]
+  components:
+    version:
+      icon: fa-book
+      menu:
+      - text: "Documentation for version of package:"
+      - text: Released
+        href: https://andrisignorell.github.io/DescToolsOffice/
+      - text: In-development
+        href: https://andrisignorell.github.io/DescToolsOffice/dev/
+    articles:
+      text: Tutorials
+      menu:
+        - text: "PDF:"
+        - text: 'Desc Tools Office Reports'
+          href:  https://github.com/AndriSignorell/DescToolsOffice/raw/master/vignettes/DescToolsOfficeReports.pdf
+
+# About package ==============================================================
+reference:
+  - title: About Package
+    contents: 
+    - DescToolsOffice-package
+
+# In/Out =====================================================================
+
+# Word, Excel, PowerPoint ----------------------------------------------------
+  - title: "Word, Excel, PowerPoint: In/Out"
+    contents:
+    - GetCurrPP
+    - GetCurrWrd
+    - GetCurrXL
+    - GetNewPP
+    - GetNewWrd
+    - GetNewXL
+    - IsValidHwnd
+    - PpAddSlide
+    - PpPlot
+    - PpText
+    - SendOutlookMail
+    - ToWrd
+    - ToWrdB
+    - ToWrdPlot
+    - ToXL
+    - wdConst
+    - WrdBookmark
+    - WrdCaption
+    - WrdCellRange
+    - WrdFont
+    - WrdFormatCells
+    - WrdGoto
+    - WrdInsertBookmark
+    - WrdKill
+    - WrdMergeCells
+    - WrdPageBreak
+    - WrdParagraphFormat
+    - WrdPlot
+    - WrdSaveAs
+    - WrdStyle
+    - WrdTable
+    - WrdTableBorders
+    - WrdUpdateBookmark
+    - XLDateToPOSIXct
+    - XLGetRange
+    - XLGetWorkbook
+    - XLKill
+    - XLSaveAs
+    - XLView
+

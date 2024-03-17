@@ -65,7 +65,7 @@ valid running application instance can be checked by
 
 # Start a new instance
 wrd <- GetNewWrd()
-WrdText("Send some Text", wrd=wrd)
+ToWrd("Send some text to Word ... \n", wrd=wrd)
 
 # Release the handle
 rm(wrd)

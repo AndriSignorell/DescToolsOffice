@@ -5,12 +5,12 @@
 \alias{WrdGoto}
 \title{Get Handle to a MS-Word Bookmark}
 \usage{
-WrdBookmark(name, wrd = DescToolsOfficeOptions("lastWord"))
+WrdBookmark(name, wrd = DescToolsOptions("lastWord"))
 
 WrdGoto(
   name,
   what = wdConst$wdGoToBookmark,
-  wrd = DescToolsOfficeOptions("lastWord")
+  wrd = DescToolsOptions("lastWord")
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ WrdGoto(
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 
 \item{what}{a word constant, defining the type of object to be used to place
 the cursor.}

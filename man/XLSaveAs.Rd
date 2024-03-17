@@ -7,7 +7,7 @@
 XLSaveAs(
   fn,
   file_format = xlConst$XlFileFormat$xlWorkbookNormal,
-  xl = DescToolsOfficeOptions("lastXL")
+  xl = DescToolsOptions("lastXL")
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ XLSaveAs(
 \item{xl}{the pointer to a MS-Excel instance. An new instance can be created
 with \code{GetNewXL()}, returning the appropriate handle. A handle to an
 already running instance is returned by \code{GetCurrXL()}.  Default is the
-last created pointer stored in \code{DescToolsOfficeOptions("lastXL")}.}
+last created pointer stored in \code{DescToolsOptions("lastXL")}.}
 }
 \value{
 returns \code{TRUE} if the save operation has been successful

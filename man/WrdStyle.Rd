@@ -5,7 +5,7 @@
 \alias{WrdStyle<-}
 \title{Get or Set the Style in Word}
 \usage{
-WrdStyle(wrd = DescToolsOfficeOptions("lastWord"))
+WrdStyle(wrd = DescToolsOptions("lastWord"))
 
 WrdStyle(wrd) <- value
 }
@@ -13,7 +13,7 @@ WrdStyle(wrd) <- value
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 
 \item{value}{the name of the style to be used to the output. This should be
 defined an existing name.}

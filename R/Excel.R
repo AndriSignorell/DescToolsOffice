@@ -159,7 +159,7 @@ XLView <- function (x, col.names = TRUE, row.names = FALSE, na = "", preserveStr
 #' @param xl the pointer to a MS-Excel instance. An new instance can be created
 #' with \code{GetNewXL()}, returning the appropriate handle. A handle to an
 #' already running instance is returned by \code{GetCurrXL()}.  Default is the
-#' last created pointer stored in \code{DescToolsOfficeOptions("lastXL")}.
+#' last created pointer stored in \code{DescToolsOptions("lastXL")}.
 #' @return returns \code{TRUE} if the save operation has been successful
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{XLView}}
@@ -172,7 +172,8 @@ XLView <- function (x, col.names = TRUE, row.names = FALSE, na = "", preserveStr
 #' xl$quit()
 #' }
 #' @export XLSaveAs
-XLSaveAs <- function(fn, file_format=xlConst$XlFileFormat$xlWorkbookNormal, xl=DescToolsOfficeOptions("lastXL")){
+XLSaveAs <- function(fn, file_format=xlConst$XlFileFormat$xlWorkbookNormal, 
+                     xl=DescToolsOptions("lastXL")){
   xl[["ActiveWorkbook"]]$SaveAs(FileName=fn, FileFormat=file_format)
 }
 

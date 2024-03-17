@@ -14,28 +14,9 @@
 \alias{ToWrd.abstract}
 \title{Send Objects to Word}
 \usage{
-ToWrd(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
+ToWrd(x, font = NULL, ..., wrd = DescToolsOptions("lastWord"))
 
-\method{ToWrd}{default}(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
-
-\method{ToWrd}{TOne}(
-  x,
-  font = NULL,
-  para = NULL,
-  main = NULL,
-  align = NULL,
-  autofit = TRUE,
-  ...,
-  wrd = DescToolsOfficeOptions("lastWord")
-)
-
-\method{ToWrd}{abstract}(
-  x,
-  font = NULL,
-  autofit = TRUE,
-  ...,
-  wrd = DescToolsOfficeOptions("lastWord")
-)
+\method{ToWrd}{default}(x, font = NULL, ..., wrd = DescToolsOptions("lastWord"))
 
 \method{ToWrd}{character}(
   x,
@@ -44,7 +25,7 @@ ToWrd(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
   style = NULL,
   bullet = FALSE,
   ...,
-  wrd = DescToolsOfficeOptions("lastWord")
+  wrd = DescToolsOptions("lastWord")
 )
 
 \method{ToWrd}{table}(
@@ -57,7 +38,7 @@ ToWrd(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
   row.names = TRUE,
   col.names = TRUE,
   ...,
-  wrd = DescToolsOfficeOptions("lastWord")
+  wrd = DescToolsOptions("lastWord")
 )
 
 \method{ToWrd}{TMod}(
@@ -72,8 +53,21 @@ ToWrd(x, font = NULL, ..., wrd = DescToolsOfficeOptions("lastWord"))
   digits = 3,
   na.form = "-",
   ...,
-  wrd = DescToolsOfficeOptions("lastWord")
+  wrd = DescToolsOptions("lastWord")
 )
+
+\method{ToWrd}{TOne}(
+  x,
+  font = NULL,
+  para = NULL,
+  main = NULL,
+  align = NULL,
+  autofit = TRUE,
+  ...,
+  wrd = DescToolsOptions("lastWord")
+)
+
+\method{ToWrd}{abstract}(x, font = NULL, autofit = TRUE, ..., wrd = DescToolsOptions("lastWord"))
 }
 \arguments{
 \item{x}{the object to be transferred to Word.}
@@ -87,12 +81,17 @@ list containing fontname, fontsize, bold and italic flags:\cr
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 
 \item{para}{list containing paragraph format properties to be applied to the
 inserted text. For right align the paragraph one can set: \cr
 \code{list(alignment="r", LineBefore=0.5)}. See details for the full set of
 properties.}
+
+\item{style}{character, name of a style to be applied to the inserted text.}
+
+\item{bullet}{logical, defines if the text should be formatted as bullet
+points.}
 
 \item{main}{a caption for a table. This will be inserted by
 \code{\link{WrdCaption}} in Word and can be listed afterwards in a specific
@@ -103,15 +102,10 @@ index. Default is \code{NULL}, which will insert nothing. Ignored if
 \code{"l"} means left, \code{"r"} right and \code{"c"} center alignement.
 The code will be recyled to the length of thenumber of columns.}
 
+\item{tablestyle}{either the name of a defined Word tablestyle or its index.}
+
 \item{autofit}{logical, defining if the columns of table should be fitted to
 the length of their content.}
-
-\item{style}{character, name of a style to be applied to the inserted text.}
-
-\item{bullet}{logical, defines if the text should be formatted as bullet
-points.}
-
-\item{tablestyle}{either the name of a defined Word tablestyle or its index.}
 
 \item{row.names}{logical, defining whether the row.names should be included
 in the output. Default is \code{FALSE}.}

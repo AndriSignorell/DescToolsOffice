@@ -5,7 +5,7 @@
 \alias{WrdParagraphFormat<-}
 \title{Get or Set the Paragraph Format in Word}
 \usage{
-WrdParagraphFormat(wrd = DescToolsOfficeOptions("lastWord"))
+WrdParagraphFormat(wrd = DescToolsOptions("lastWord"))
 
 WrdParagraphFormat(wrd) <- value
 }
@@ -13,7 +13,7 @@ WrdParagraphFormat(wrd) <- value
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 
 \item{value}{a list defining the paragraph format.  This can contain any
 combination of: \code{LeftIndent}, \code{RightIndent}, \code{SpaceBefore},

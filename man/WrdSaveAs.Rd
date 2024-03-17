@@ -5,7 +5,7 @@
 \alias{WrdOpenFile}
 \title{Open and Save Word Documents}
 \usage{
-WrdSaveAs(fn, fileformat = "docx", wrd = DescToolsOfficeOptions("lastWord"))
+WrdSaveAs(fn, fileformat = "docx", wrd = DescToolsOptions("lastWord"))
 }
 \arguments{
 \item{fn}{filename and -path for the document.}
@@ -16,7 +16,7 @@ WrdSaveAs(fn, fileformat = "docx", wrd = DescToolsOfficeOptions("lastWord"))
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 }
 \value{
 nothing returned

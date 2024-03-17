@@ -44,7 +44,7 @@
 #' # Start a new instance of an application and store the handle as option "lastWord"
 #' hwnd <- GetCOMAppHandle("Word.Application", option = "lastWord", 
 #'                          existing = FALSE, visible = TRUE)
-#' getOption("lastWord")
+#' DescToolsOptions("lastWord")
 #' 
 #' # close the application
 #' hwnd$quit()
@@ -80,7 +80,7 @@ GetCOMAppHandle <- function(app, option=NULL, existing=FALSE, visible=TRUE){
       
     # store the handle as option, if required
     if(!is.null(option))
-        eval(parse(text=gettextf("options(%s = hwnd)", option)))
+        eval(parse(text=gettextf("DescToolsOptions(%s = hwnd)", option)))
 
   } else {
     
@@ -187,7 +187,7 @@ IsValidHwnd <- function(hwnd){
 #' 
 #' # Start a new instance
 #' wrd <- GetNewWrd()
-#' WrdText("Send some Text", wrd=wrd)
+#' ToWrd("Send some text to Word ... \n", wrd=wrd)
 #' 
 #' # Release the handle
 #' rm(wrd)

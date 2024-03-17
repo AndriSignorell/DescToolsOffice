@@ -6,7 +6,7 @@
 \alias{PpText}
 \title{Add Slides, Insert Texts and Plots to PowerPoint}
 \usage{
-PpAddSlide(pos = NULL, pp = getOption("lastPP", default = GetNewPP()))
+PpAddSlide(pos = NULL, pp = DescToolsOptions("lastPP", default = GetNewPP()))
 
 PpText(
   txt,
@@ -21,7 +21,7 @@ PpText(
   col = "black",
   bg = "white",
   hasFrame = TRUE,
-  pp = getOption("lastPP", default = GetNewPP())
+  pp = DescToolsOptions("lastPP", default = GetNewPP())
 )
 
 PpPlot(
@@ -34,7 +34,7 @@ PpPlot(
   width = NA,
   res = 200,
   dfact = 1.6,
-  pp = getOption("lastPP", default = GetNewPP())
+  pp = DescToolsOptions("lastPP", default = GetNewPP())
 )
 }
 \arguments{

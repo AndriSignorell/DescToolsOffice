@@ -4,7 +4,7 @@
 \alias{ToXL}
 \title{Transfer Data to Excel}
 \usage{
-ToXL(x, at, ..., xl = DescToolsOfficeOptions("lastXL"))
+ToXL(x, at, ..., xl = DescToolsOptions("lastXL"))
 }
 \arguments{
 \item{x}{is a data.frame to be transferred to MS-Excel. If data is missing a
@@ -20,7 +20,7 @@ will be placed in the MS-Excel sheet.}
 \item{xl}{the pointer to a MS-Excel instance. An new instance can be created
 with \code{GetNewXL()}, returning the appropriate handle. A handle to an
 already running instance is returned by \code{GetCurrXL()}.  Default is the
-last created pointer stored in \code{DescToolsOfficeOptions("lastXL")}.}
+last created pointer stored in \code{DescToolsOptions("lastXL")}.}
 }
 \value{
 the name/path of the temporary file edited in MS-Excel.

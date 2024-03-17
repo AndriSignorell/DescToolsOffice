@@ -18,7 +18,7 @@
 #' @param xl the pointer to a MS-Excel instance. An new instance can be created
 #' with \code{GetNewXL()}, returning the appropriate handle. A handle to an
 #' already running instance is returned by \code{GetCurrXL()}.  Default is the
-#' last created pointer stored in \code{DescToolsOfficeOptions("lastXL")}.
+#' last created pointer stored in \code{DescToolsOptions("lastXL")}.
 #' @param \dots further arguments are not used.
 
 #' @return the name/path of the temporary file edited in MS-Excel.
@@ -90,14 +90,14 @@
 #' 
 #' @export ToXL
 
-ToXL <- function (x, at, ..., xl=DescToolsOfficeOptions("lastXL")) {
+ToXL <- function (x, at, ..., xl=DescToolsOptions("lastXL")) {
   stopifnot(IsValidHwnd(xl))   # "xl is not a valid Excel handle, use GetNewXL() or GetCurrXL().")
   UseMethod("ToXL")
 }
 
 
 
-ToXL.data.frame <- function(x, at, ..., xl=DescToolsOfficeOptions("lastXL"))
+ToXL.data.frame <- function(x, at, ..., xl=DescToolsOptions("lastXL"))
   ## export the data.frame "x" into the location "at" (top,left cell)
   ## output the occupying range.
   ## TODO: row.names, more error checking
@@ -139,7 +139,7 @@ ToXL.data.frame <- function(x, at, ..., xl=DescToolsOfficeOptions("lastXL"))
 
 
 
-ToXL.matrix <- function (x, at, ..., xl = DescToolsOfficeOptions("lastXL")) {
+ToXL.matrix <- function (x, at, ..., xl = DescToolsOptions("lastXL")) {
   ## export the matrix "x" into the location "at" (top,left cell)
   
   if(is.character(at)){
@@ -178,7 +178,7 @@ ToXL.matrix <- function (x, at, ..., xl = DescToolsOfficeOptions("lastXL")) {
 }
 
 
-ToXL.array <- function (x, at, ..., xl = DescToolsOfficeOptions("lastXL")) {
+ToXL.array <- function (x, at, ..., xl = DescToolsOptions("lastXL")) {
   
   if(is.character(at)){
     # address of the left upper cell
@@ -206,12 +206,12 @@ ToXL.array <- function (x, at, ..., xl = DescToolsOfficeOptions("lastXL")) {
 
 
 
-ToXL.table <- function (x, at, ..., xl = DescToolsOfficeOptions("lastXL")) {
+ToXL.table <- function (x, at, ..., xl = DescToolsOptions("lastXL")) {
   ToXL.array(x, at=at, ..., xl=xl)
 }
 
 
-ToXL.default <- function(x, at, byrow = FALSE, ..., xl=DescToolsOfficeOptions("lastXL")) {
+ToXL.default <- function(x, at, byrow = FALSE, ..., xl=DescToolsOptions("lastXL")) {
   
   #  function(x, at = NULL, byrow = FALSE, ...)
   ## coerce x to a simple (no attributes) vector and export to

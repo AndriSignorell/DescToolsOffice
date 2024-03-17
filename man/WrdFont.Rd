@@ -5,7 +5,7 @@
 \alias{WrdFont<-}
 \title{Get or Set the Font in Word}
 \usage{
-WrdFont(wrd = DescToolsOfficeOptions("lastWord"))
+WrdFont(wrd = DescToolsOptions("lastWord"))
 
 WrdFont(wrd) <- value
 }
@@ -13,7 +13,7 @@ WrdFont(wrd) <- value
 \item{wrd}{the pointer to a word instance. Can be a new one, created by
 \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 Default is the last created pointer stored in
-\code{DescToolsOfficeOptions("lastWord")}.}
+\code{DescToolsOptions("lastWord")}.}
 
 \item{value}{the font to be used to the output. This should be defined as a
 list containing fontname, fontsize, bold and italic flags:\cr

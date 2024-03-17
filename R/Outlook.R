@@ -1,6 +1,7 @@
-# Outlook
 
-
+# **************************************
+# Some Outlook-Code
+# **************************************
 
 
 #' Send a Mail Using Outlook as Mail Client
@@ -15,10 +16,13 @@
 #' @param subject the subject of the mail
 #' @param body the body text of the mail
 #' @param attachment a vector of paths to attachments
-#' @return Nothing is returned
+#' 
+#' @return \code{TRUE} is returned in case of success and \code{FALSE} in case of an
+#'  unhandled error while sending mail
+#' 
 #' @author Andri Signorell <andri@@signorell.net> strongly based on code of
 #' Franziska Mueller
-#' @seealso \code{\link{ToXL}}
+#' 
 #' @keywords MS-Office
 #' @examples
 #' \dontrun{
@@ -28,11 +32,13 @@
 #'                                "C:/temp/fileB.txt"))
 #' }
 #' 
+
 #' @export SendOutlookMail
 SendOutlookMail <- function(to, cc=NULL, bcc=NULL, subject, body, attachment=NULL){
   
-  out <- GetCOMAppHandle("Outlook.Application", existing=TRUE)
-  
+  # Outlook has no visible property
+  out <- RDCOMClient::COMCreate("Outlook.Application", force=TRUE, existing=FALSE)
+
   mail <- out$CreateItem(0)
   mail[["to"]] <- to
   if(!is.null(cc)) mail[["cc"]] <- cc
@@ -45,12 +51,17 @@ SendOutlookMail <- function(to, cc=NULL, bcc=NULL, subject, body, attachment=NUL
     sapply(attachment, function(x) mail[["Attachments"]]$Add(x))
   
   ## senden                  
-  mail$Send()
+  res <- mail$Send()
   
   rm(out, mail)
   gc() 
   
-  invisible()
+  return(res)
+  
+  # if(res)
+  #   return("Mail sent.")
+  # else 
+  #   return("Unknown error while sending mail. Please check!")
   
 }
 

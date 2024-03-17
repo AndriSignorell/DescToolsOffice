@@ -103,7 +103,7 @@
 #' 
 
 
-PpAddSlide <- function(pos = NULL, pp = getOption("lastPP", default = GetNewPP())){
+PpAddSlide <- function(pos = NULL, pp = DescToolsOptions("lastPP", default = GetNewPP())){
   
   slides <- pp[["ActivePresentation"]][["Slides"]]
   if(is.null(pos)) pos <- slides$Count()+1
@@ -116,7 +116,7 @@ PpAddSlide <- function(pos = NULL, pp = getOption("lastPP", default = GetNewPP()
 PpText <- function (txt, x=1, y=1, height=50, width=100, fontname = "Calibri", fontsize = 18, 
                     bold = FALSE,
                     italic = FALSE, col = "black", bg = "white", hasFrame = TRUE, 
-                    pp = getOption("lastPP", default = GetNewPP())) {
+                    pp = DescToolsOptions("lastPP", default = GetNewPP())) {
   
   msoShapeRectangle <- 1
   
@@ -153,7 +153,7 @@ PpText <- function (txt, x=1, y=1, height=50, width=100, fontname = "Calibri", f
 #' @rdname PpAddSlide
 PpPlot <- function( type="png", crop=c(0,0,0,0),
                     picscale=100, x=1, y=1, height=NA, width=NA, res=200, dfact=1.6, 
-                    pp = getOption("lastPP", default = GetNewPP()) ){
+                    pp = DescToolsOptions("lastPP", default = GetNewPP()) ){
   
   # height, width in cm!
   # scale will be overidden, if height/width defined

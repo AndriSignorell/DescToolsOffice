@@ -20,7 +20,8 @@ SendOutlookMail(to, cc = NULL, bcc = NULL, subject, body, attachment = NULL)
 \item{attachment}{a vector of paths to attachments}
 }
 \value{
-Nothing is returned
+\code{TRUE} is returned in case of success and \code{FALSE} in case of an
+unhandled error while sending mail
 }
 \description{
 Sending emails in R can be required in some reporting tasks. As we already
@@ -34,9 +35,6 @@ SendOutlookMail(to=c("me@microsoft.com", "you@rstudio.com"), subject = "Some Inf
                                "C:/temp/fileB.txt"))
 }
 
-}
-\seealso{
-\code{\link{ToXL}}
 }
 \author{
 Andri Signorell \href{mailto:andri@signorell.net}{andri@signorell.net} strongly based on code of

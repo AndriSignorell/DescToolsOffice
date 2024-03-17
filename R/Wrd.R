@@ -83,7 +83,7 @@
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{ToWrd}}, \code{\link{WrdPlot}},
 #' \code{\link{GetNewWrd}}, \code{\link{GetCurrWrd}}
@@ -103,7 +103,7 @@
 #' }
 #' 
 #' @export WrdCaption
-WrdCaption <- function(x, index = 1, wrd = DescToolsOfficeOptions("lastWord")){
+WrdCaption <- function(x, index = 1, wrd = DescToolsOptions("lastWord")){
   
   lst <- Recycle(x=x, index=index)
   x <-
@@ -433,7 +433,7 @@ WrdFormatCells <- function(wtab, rstart, rend, col=NULL, bg=NULL, font=NULL,
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @return a list of the attributes of the font in the current cursor position:
 #' \item{name}{the fontname} \item{size}{the fontsize} \item{bold}{bold}
 #' \item{italic}{italic} \item{color}{the fontcolor}
@@ -454,7 +454,7 @@ WrdFormatCells <- function(wtab, rstart, rend, col=NULL, bg=NULL, font=NULL,
 #'   ToWrd(gettextf("This is Times size %s \n", i), font=list(name="Times", size=i))
 #' }
 #' @export WrdFont
-WrdFont <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
+WrdFont <- function(wrd = DescToolsOptions("lastWord") ) {
   # returns the font object list: list(name, size, bold, italic) on the current position
   
   wrdSel <- wrd[["Selection"]]
@@ -520,7 +520,7 @@ WrdFont <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @return an object with the class \code{paragraph}, basically a list with the
 #' attributes of the paragraph in the current cursor position:
 #' \item{LeftIndent}{left indentation in (in points) for the specified
@@ -586,7 +586,7 @@ WrdFont <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
 #' }
 #' 
 #' @export WrdParagraphFormat
-WrdParagraphFormat <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
+WrdParagraphFormat <- function(wrd = DescToolsOptions("lastWord") ) {
   
   wrdPar <- wrd[["Selection"]][["ParagraphFormat"]]
   
@@ -678,7 +678,7 @@ WrdParagraphFormat <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @return character, name of the style
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{ToWrd}}, \code{\link{WrdPlot}},
@@ -693,7 +693,7 @@ WrdParagraphFormat <- function(wrd = DescToolsOfficeOptions("lastWord") ) {
 #' WrdStyle(wrd)
 #' }
 #' @export WrdStyle
-WrdStyle <- function (wrd = DescToolsOfficeOptions("lastWord")) {
+WrdStyle <- function (wrd = DescToolsOptions("lastWord")) {
   wrdSel <- wrd[["Selection"]]
   wrdStyle <- wrdSel[["Style"]][["NameLocal"]]
   return(wrdStyle)
@@ -721,7 +721,7 @@ WrdStyle <- function (wrd = DescToolsOfficeOptions("lastWord")) {
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{WrdFont}}, \code{\link{WrdPlot}},
 #' \code{\link{GetNewWrd}}, \code{\link{GetCurrWrd}}
@@ -735,7 +735,7 @@ WrdStyle <- function (wrd = DescToolsOfficeOptions("lastWord")) {
 #' WrdText("This is text on another page.\n\n")
 #' }
 #' @export WrdPageBreak
-WrdPageBreak <- function(wrd = DescToolsOfficeOptions("lastWord")) {
+WrdPageBreak <- function(wrd = DescToolsOptions("lastWord")) {
   wrd[["Selection"]]$InsertBreak(wdConst$wdSectionBreakNextPage)
   invisible()
 }
@@ -746,7 +746,7 @@ WrdPageBreak <- function(wrd = DescToolsOfficeOptions("lastWord")) {
 
 
 
-WrdUpdateFields <- function(where = "wholestory", wrd = DescToolsOfficeOptions("lastWord")) {
+WrdUpdateFields <- function(where = "wholestory", wrd = DescToolsOptions("lastWord")) {
   
   ii <- if( identical(where, "wholestory") )
     list(
@@ -792,7 +792,7 @@ WrdUpdateFields <- function(where = "wholestory", wrd = DescToolsOfficeOptions("
 
 
 
-WrdOpenFile <- function(fn, wrd = DescToolsOfficeOptions("lastWord")){
+WrdOpenFile <- function(fn, wrd = DescToolsOptions("lastWord")){
   
   if(!IsValidHwnd(wrd)){
     wrd <- GetNewWrd()
@@ -828,7 +828,7 @@ WrdOpenFile <- function(fn, wrd = DescToolsOfficeOptions("lastWord")){
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @return nothing returned
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{GetNewWrd}()}
@@ -842,7 +842,7 @@ WrdOpenFile <- function(fn, wrd = DescToolsOfficeOptions("lastWord")){
 #' WrdSaveAs(fn="report", fileformat="htm")
 #' }
 #' @export WrdSaveAs
-WrdSaveAs <- function(fn, fileformat="docx", wrd = DescToolsOfficeOptions("lastWord")) {
+WrdSaveAs <- function(fn, fileformat="docx", wrd = DescToolsOptions("lastWord")) {
   
   wdConst$wdExportFormatPDF <- 17
   
@@ -908,7 +908,7 @@ PtsToCm <- function(x) x / 28.35
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @return Returns a pointer to the inserted picture.
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{ToWrd}}, \code{\link{WrdCaption}},
@@ -945,7 +945,7 @@ PtsToCm <- function(x) x / 28.35
 #' 
 #' @export WrdPlot
 WrdPlot <- function( type="png", append.cr=TRUE, crop=c(0,0,0,0), main = NULL,
-                     picscale=100, height=NA, width=NA, res=300, dfact=1.6, wrd = DescToolsOfficeOptions("lastWord") ){
+                     picscale=100, height=NA, width=NA, res=300, dfact=1.6, wrd = DescToolsOptions("lastWord") ){
   
   # png is considered a good default choice for export to word (Smith)
   # http://blog.revolutionanalytics.com/2009/01/10-tips-for-making-your-r-graphics-look-their-best.html
@@ -1043,7 +1043,7 @@ WrdPlot <- function( type="png", append.cr=TRUE, crop=c(0,0,0,0), main = NULL,
 #' @param wrd the pointer to a word instance. Can be a new one, created by
 #' \code{GetNewWrd()} or an existing one, created by \code{GetCurrWrd()}.
 #' Default is the last created pointer stored in
-#' \code{DescToolsOfficeOptions("lastWord")}.
+#' \code{DescToolsOptions("lastWord")}.
 #' @return A pointer to the inserted table.
 #' @author Andri Signorell <andri@@signorell.net>
 #' @seealso \code{\link{GetNewWrd}}, \code{\link{ToWrd}}
@@ -1056,7 +1056,7 @@ WrdPlot <- function( type="png", append.cr=TRUE, crop=c(0,0,0,0), main = NULL,
 #' }
 #' 
 #' @export WrdTable
-WrdTable <- function(nrow = 1, ncol = 1, heights = NULL, widths = NULL, main = NULL, wrd = DescToolsOfficeOptions("lastWord")){
+WrdTable <- function(nrow = 1, ncol = 1, heights = NULL, widths = NULL, main = NULL, wrd = DescToolsOptions("lastWord")){
   
   res <- wrd[["ActiveDocument"]][["Tables"]]$Add(wrd[["Selection"]][["Range"]],
                                                  NumRows = nrow, NumColumns = ncol)
@@ -1094,13 +1094,13 @@ WrdTable <- function(nrow = 1, ncol = 1, heights = NULL, widths = NULL, main = N
 
 # ## Word Table - experimental code
 #
-# WrdTable <- function(tab, main = NULL, wrd = DescToolsOfficeOptions("lastWord"), row.names = FALSE, ...){
+# WrdTable <- function(tab, main = NULL, wrd = DescToolsOptions("lastWord"), row.names = FALSE, ...){
 #   UseMethod("WrdTable")
 #
 # }
 #
 #
-# WrdTable.Freq <- function(tab, main = NULL, wrd = DescToolsOfficeOptions("lastWord"), row.names = FALSE, ...){
+# WrdTable.Freq <- function(tab, main = NULL, wrd = DescToolsOptions("lastWord"), row.names = FALSE, ...){
 #
 #   tab[,c(3,5)] <- sapply(round(tab[,c(3,5)], 3), Format, digits=3)
 #   res <- WrdTable.default(tab=tab, wrd=wrd)
@@ -1116,14 +1116,14 @@ WrdTable <- function(nrow = 1, ncol = 1, heights = NULL, widths = NULL, main = N
 #
 # }
 #
-# WrdTable.ftable <- function(tab, main = NULL, wrd = DescToolsOfficeOptions("lastWord"), row.names = FALSE, ...) {
+# WrdTable.ftable <- function(tab, main = NULL, wrd = DescToolsOptions("lastWord"), row.names = FALSE, ...) {
 #   tab <- FixToTable(capture.output(tab))
 #   NextMethod()
 # }
 #
 #
 # WrdTable.default <- function (tab, font = NULL, align=NULL, autofit = TRUE, main = NULL,
-#                               wrd = DescToolsOfficeOptions("lastWord"), row.names=FALSE,
+#                               wrd = DescToolsOptions("lastWord"), row.names=FALSE,
 #                               ...) {
 #
 #   dim1 <- ncol(tab)
